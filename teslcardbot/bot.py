@@ -175,7 +175,7 @@ class TESLCardBot:
         return remove_duplicates(TESLCardBot.CARD_MENTION_REGEX.findall(s))
 
     def _get_praw_instance(self):
-        r = praw.Reddit('TES:L Card Fetcher by /u/{}.'.format(self.author))
+        r = praw.Reddit('jrwteslbot1'.'.format(self.author))
         r.login(username=os.environ['REDDIT_USERNAME'], password=os.environ['REDDIT_PASSWORD'], disable_warning=True)
         return r
 
