@@ -45,7 +45,7 @@ class TestParsingFunctions(unittest.TestCase):
         self.maxDiff = None
         print(str(Card.get_info('tyr')))
         # print(str(Card.get_info('lesser ward')))
-        # print(str(Card.get_info('dawnbreaker')))
+        print(str(Card.get_info('dawnbreaker')))
 
         self.assertEqual(str(Card.get_info('tyr')), '[📷](http://www.legends-decks.com/img_cards/tyr.png) Tyr '
                                                     '| Creature | 4 - 5/4 | Prophecy, Breakthrough, Guard '
