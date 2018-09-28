@@ -42,7 +42,7 @@ class TestParsingFunctions(unittest.TestCase):
 
     def test_get_info(self):
         Card.preload_card_data()
-
+        self.maxDiff = None
         print(str(Card.get_info('tyr')))
         # print(str(Card.get_info('lesser ward')))
         # print(str(Card.get_info('dawnbreaker')))
