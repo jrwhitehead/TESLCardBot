@@ -5,7 +5,7 @@ from teslcardbot.bot import TESLCardBot, Card
 class TestParsingFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.bot = TESLCardBot(author='TestParsingFunctions', target_sub='TESLCardBotTesting')
+        self.bot = TESLCardBot(author='tesl-bot-9000', target_sub='jrwBotTesting')
         Card.preload_card_data()
 
     def test_find_card_mentions(self):
