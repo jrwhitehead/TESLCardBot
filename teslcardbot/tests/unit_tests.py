@@ -39,7 +39,6 @@ class TestParsingFunctions(unittest.TestCase):
         # Atronachs are not in the DB yet
         # TODO: Remove when atronachs are in the DB
         self.assertEqual(Card._fetch_data_partial('Storm Atronach'), None)
-        self.assertEqual(Card._fetch_data_partial('Storm')['name'], 'Stormhold Henchman')
 
     def test_get_info(self):
         Card.preload_card_data()
