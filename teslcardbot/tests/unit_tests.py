@@ -3,7 +3,6 @@ from teslcardbot.bot import TESLCardBot, Card
 
 
 class TestParsingFunctions(unittest.TestCase):
-    self.maxDiff = None
 
     def setUp(self):
         self.bot = TESLCardBot(author='tesl-bot-9000', target_sub='jrwBotTesting')
