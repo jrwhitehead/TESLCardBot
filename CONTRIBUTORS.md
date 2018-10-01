@@ -8,3 +8,6 @@
 
 - [Stephen W.](https://github.com/swong225)
 	- Contributor
+
+- [NotGooseFromTopGun](https://github.com/jrwhitehead)
+	- Maintainer
