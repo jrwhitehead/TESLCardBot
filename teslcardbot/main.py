@@ -1,5 +1,4 @@
-from teslcardbot.bot import TESLCardBot
-from datetime import datetime, timedelta
+from bot import TESLCardBot
 import argparse
 
 if __name__ == '__main__':
@@ -9,7 +8,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print('***DEV*** TESLCardBot started! (/r/{})'.format(args.target_sub))
-    bot = TESLCardBot(author='NotGOoseFromTopGun', target_sub=args.target_sub)
+    print('TESLCardBot started! (/r/{})'.format(args.target_sub))
+    bot = TESLCardBot(author='NotGooseFromTopGun', target_sub=args.target_sub)
     bot.start(batch_limit=10, buffer_size=1000)
-    print('***DEV*** TESLCardBot stopped running.')
+    print('TESLCardBot stopped running.')
