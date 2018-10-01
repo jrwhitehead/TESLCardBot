@@ -228,17 +228,18 @@ class TESLCardBot:
                                       'Or you can open an issue on GitHub.',
                                       'My author doesn\'t actively monitor this sub, or my replies, so PM him if you need anything.',
                                       ])
-        auto_word = random.choice(['automatically', 'automagically'])
+        auto_word = random.choice(['automatically', 'automagically', 'with love', 'with extra rocket sauce'])
 
         if len(cards_not_found) == len(cards):
             response = 'I\'m sorry, but none of the cards you mentioned were matched. ' \
-                       'Tokens and other generated cards will be included soon.\n'
+                       'Tokens and other generated cards may be included soon.\n'
         elif len(cards_not_found) > 0:
             response += '\n^(Some of the cards you mentioned were not matched: _{}._ ' \
-                        'Tokens and other generated cards will be included soon.)\n'.format(', '.join(cards_not_found))
+                        'Tokens and other generated cards may be included soon.)\n'.format(', '.join(cards_not_found))
 
         response += '\n**Did you know?** _{}_\n\n' \
                     '\n\n&nbsp;\n\n^(_I am a bot, and this action was performed {}. Made by user G3Kappa. ' \
+                    'Maintained by NotGooseFromTopGun. ' \
                     'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/G3Kappa/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
                     'message/compose/?to={})'.format(did_you_know, auto_word, self.author)
