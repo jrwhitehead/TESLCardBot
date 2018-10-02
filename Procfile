@@ -1,1 +1,1 @@
-worker: python teslcardbot/main.py --target_sub BotTestingPlace
+worker: python teslcardbot/main.py --target_sub JRWBotTesting
