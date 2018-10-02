@@ -145,7 +145,7 @@ class Card:
         self.type = type
         if len(attribute_3) > 0:
             self.attributes = [attribute_1.title(), attribute_2.title(), attribute_3.title()]
-        if len(attribute_2) > 0:
+        elif len(attribute_2) > 0:
             self.attributes = [attribute_1.title(), attribute_2.title()]   
         else:
             self.attributes = [attribute_1.title()]
@@ -244,7 +244,7 @@ class TESLCardBot:
                                       'Or you can open an issue on GitHub.',
                                       'My maintainer doesn\'t actively monitor this sub, or my replies, so PM him if you need anything.',
                                       ])
-        auto_word = random.choice(['automatically', 'automagically', 'with love', 'with extra rocket sauce'])
+        auto_word = random.choice(['automatically', 'automagically'])
 
         if len(cards_not_found) == len(cards):
             response = 'I\'m sorry, but none of the cards you mentioned were matched. ' \
@@ -254,9 +254,8 @@ class TESLCardBot:
                         'Tokens and other generated cards may be included soon.)\n'.format(', '.join(cards_not_found))
 
         response += '\n**Did you know?** _{}_\n\n' \
-                    '\n\n&nbsp;\n\n^(_I am a bot, and this action was performed {}. Made by user G3Kappa. ' \
-                    'Maintained by NotGooseFromTopGun. ' \
                     '\n\n&nbsp;\n\n^(_I am a bot, and this action was performed {}. Created by user G3Kappa. ' \
+                    'Maintained by NotGooseFromTopGun. ' \
                     'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
                     'message/compose/?to={})'.format(did_you_know, auto_word, self.author)
