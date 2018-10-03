@@ -1,1 +1,1 @@
-worker: python teslcardbot/main.py --target_sub JRWBotTesting
+worker: python teslcardbot/main.py --target_sub elderscrollslegends
