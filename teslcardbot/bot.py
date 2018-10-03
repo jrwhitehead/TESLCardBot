@@ -279,8 +279,8 @@ class TESLCardBot:
         
         while True:
             try:
-                # new_submissions = [s for s in subreddit.new(limit=batch_limit) if s.id not in already_done]
-                new_submissions = subreddit.stream.submissions()
+                new_submissions = [s for s in subreddit.new(limit=batch_limit) if s.id not in already_done]
+                # new_submissions = subreddit.stream.submissions()
 
                 # new_comments = [c for c in r.subreddit(self.target_sub).stream.comments() if c.id not in already_done]
                 new_comments = r.subreddit(self.target_sub).stream.comments() 
