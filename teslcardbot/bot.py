@@ -179,7 +179,7 @@ class Card:
             mana=self.cost,
             stats=_format_stats('{} - {}/{}'),
             keywords=', '.join(map(str, self.keywords)) + '' if len(self.keywords) > 0 else 'None',
-            text=self.text if len(self.text) > 0 else 'This card\'s name isn\'t in the database. Possible typo?'
+            text=self.text if len(self.text) > 0 else 'This card has no text.'
         )
 
 class TESLCardBot:
