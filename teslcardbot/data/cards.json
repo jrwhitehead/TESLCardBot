@@ -3288,6 +3288,19 @@
     "text": "Summon: If you have a (neutral) card in play, Silence another creature."
   },
   {
+    "name": "Vivec",
+    "rarity": "Legendary",
+    "isunique": true,
+    "type": "creature",
+    "attribute_1": "willpower",
+    "attribute_2": "",
+    "cost": "5",
+    "attack": "5",
+    "health": "5",
+    "race": "god",
+    "text": "Exalt 3: +5/+5. While you have an Exalted creature in play, you can't lose the game."
+  },
+  {
     "name": "Vivec City Pilgrim",
     "rarity": "Common",
     "isunique": false,
@@ -9258,19 +9271,6 @@
     "health": "1",
     "race": "woodelf",
     "text": "Summon: Enemy creatures in this lane lose Cover."
-  },
-  {
-    "name": "Vivec",
-    "rarity": "Legendary",
-    "isunique": true,
-    "type": "creature",
-    "attribute_1": "willpower",
-    "attribute_2": "",
-    "cost": "5",
-    "attack": "5",
-    "health": "5",
-    "race": "god",
-    "text": "Exalt 3: +5/+5. While you have an Exalted creature in play, you can't lose the game."
   },
   {
     "name": "Wabbajack",
