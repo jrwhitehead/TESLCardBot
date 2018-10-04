@@ -153,6 +153,7 @@ class Card:
             return None
 
         match = matches[0]
+        print(matches)
         if Card._escape_name(name) in Card._escape_name(match['name']):
             return match
         return None
@@ -417,7 +418,3 @@ class TESLCardBot:
     def __init__(self, author='Anonymous', target_sub='all'):
         self.author = author
         self.target_sub = target_sub
-
-if __name__ == '__main__':
-    bot = TESLCardBot()
-    print(bot.build_response(['mummi']))
