@@ -9,17 +9,21 @@ from prawcore.exceptions import PrawcoreException
 
 import praw.exceptions
 
+
 def remove_duplicates(seq):
     seen = set()
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
+
 class Card:
     CARD_IMAGE_BASE_URL = 'http://www.legends-decks.com/img_cards/{}.png'
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
     JSON_DATA = []
-    KEYWORDS = ['Prophecy', 'Breakthrough', 'Guard', 'Regenerate', 'Charge', 'Ward', 'Shackle',
-                'Lethal', 'Pilfer', 'Last Gasp', 'Summon', 'Drain', 'Assemble', 'Betray',
+    KEYWORDS = ['Prophecy', 'Breakthrough', 'Guard', 'Regenerate', 'Charge',
+                'Ward', 'Shackle',
+                'Lethal', 'Pilfer', 'Last Gasp', 'Summon', 'Drain', 'Assemble',
+                'Betray',
                 'Exalt', 'Plot', 'Rally', 'Slay', 'Treasure Hunt']
     PARTIAL_MATCH_END_LENGTH = 20
 
@@ -57,27 +61,87 @@ class Card:
         return remove_duplicates(keywords)
 
     @staticmethod
+    def _get_bigrams(word):
+        bigrams = []
+        for i in range(len(word) - 1):
+            bigrams.append(word[i:i + 2])
+        return bigrams
+
+    @staticmethod
+    def _get_union(list1, list2):
+        return list(set(list1 + list2))
+
+    @staticmethod
+    def _get_intersection(list1, list2):
+        return [x for x in list1 if x in list2]
+
+    @staticmethod
+    def get_similarity_index(word1, word2):
+        bigrams1 = Card._get_bigrams(word1)
+        bigrams2 = Card._get_bigrams(word2)
+        return len(Card._get_intersection(bigrams1, bigrams2)) / len(
+            Card._get_union(bigrams1, bigrams2))
+
+    @staticmethod
+    def _get_data_with_typo(name):
+        """
+        This function implements spell-checking algorithm using bigrams.
+        The idea is simple: we get all the bigrams for the input word and every
+        word from the dictionary to see how closely they match, and return
+        the closest matching card. We determine how close the match is by
+        checking the relation of lengths of intersection of bigram lists to
+        their intersection
+        Example:
+        Jeral and Jerall are 2 words we are checking
+        For the first one, the bigrams would be ['je', 'er', 'ra', 'al'],
+        for the second one: ['je', 'er', 'ra', 'al' ,''ll]
+        Length of union is 5, length of intersection is 4, so similarity index
+        is 4/5 or 0.8, so it's likely to be the same word with a typo
+        Ex.2: Jerall and Jeroll:
+        For the first one, the bigrams would be ['je', 'er', 'ra', 'al', 'll'],
+        for the second one: ['je', 'er', 'ro', 'ol' ,''ll]
+        Union is of length 7, union is of length 3, so the index is 3/7 or
+        approx. 0.43. Still quite good, and probably will be the best bet.
+        :param name: the name of the card we are trying to find
+        :return: the card with the best match and the index
+        """
+        best_match = None
+        best_similarity = 0
+        for x in Card.JSON_DATA:
+            ind = Card.get_similarity_index(Card._escape_name(name),
+                                            Card._escape_name(x['name']))
+            if ind > best_similarity:
+                best_match = x
+        return best_match, best_similarity
+
+    @staticmethod
     def _fetch_data_partial(name):
         i = 0
         matches = ['', '']
         while len(matches) > 1 and i <= Card.PARTIAL_MATCH_END_LENGTH:
-            matches = [s for s in Card.JSON_DATA if Card._escape_name(s['name']).startswith(Card._escape_name(name[:i]))]
+            # matches = [s for s in Card.JSON_DATA if Card._escape_name(s['name']).startswith(Card._escape_name(name[:i]))]
+            # imho, we should be checking if the partial match is anywhere in the name
+            # so {{atro}} query should return Supreme Atromancer
+            matches = [s for s in Card.JSON_DATA if
+                       Card._escape_name(name[:i]) in Card._escape_name(
+                           s['name'])]
             i += 1
 
         if len(matches) == 0:
             return None
 
         match = matches[0]
-        if Card._escape_name(match['name'])[:len(name)] == Card._escape_name(name):
+        if Card._escape_name(name) in Card._escape_name(match['name'])[:len(name)]:
             return match
         return None
 
     @staticmethod
     def get_info(name):
         name = Card._escape_name(name)
-
+        index = 1  # will need it later, I'll explain why
         if name == 'teslcardbot':  # I wonder...
-            return Card('TESLCardBot', 'https://imgs.xkcd.com/comics/tabletop_roleplaying.png',
+            return Card('TESLCardBot',
+                        'https://imgs.xkcd.com/comics/tabletop_roleplaying.png',
                         type='Bot',
                         attribute_1='Python',
                         attribute_2='JSON',
@@ -93,9 +157,15 @@ class Card:
         data = Card._fetch_data_partial(name)
 
         if data is None:
-            return None
+            # Attempting to guess a card that is written with a typo
+            data, index = Card._get_data_with_typo(name)
 
-        img_url = Card.CARD_IMAGE_BASE_URL.format(Card._escape_name(data['name']))
+        if data is None or index < 0.25:
+            # if we found literally nothing (which is unlikely), or they aren't similar enough, quit
+            # 0.25 is chosen from the top of my head, may need tweaking
+            return None
+        img_url = Card.CARD_IMAGE_BASE_URL.format(
+            Card._escape_name(data['name']))
         # Unlikely, but possible?
         if not Card._img_exists(img_url):
             img_url = Card.CARD_IMAGE_404_URL
@@ -103,11 +173,11 @@ class Card:
         name = data['name']
         type = data['type']
         attr_1 = data['attribute_1']
-        if 'attribute_2' in data: 
+        if 'attribute_2' in data:
             attr_2 = data['attribute_2']
         else:
             attr_2 = ''
-        if 'attribute_3' in data: 
+        if 'attribute_3' in data:
             attr_3 = data['attribute_3']
         else:
             attr_3 = ''
@@ -139,14 +209,16 @@ class Card:
                     text=text)
 
     def __init__(self, name, img_url, type='Creature', attribute_1='neutral',
-                 attribute_2='', attribute_3='', text='', rarity='Common', unique=False, cost=0, power=0, health=0):
+                 attribute_2='', attribute_3='', text='', rarity='Common',
+                 unique=False, cost=0, power=0, health=0):
         self.name = name
         self.img_url = img_url
         self.type = type
         if len(attribute_3) > 0:
-            self.attributes = [attribute_1.title(), attribute_2.title(), attribute_3.title()]
+            self.attributes = [attribute_1.title(), attribute_2.title(),
+                               attribute_3.title()]
         elif len(attribute_2) > 0:
-            self.attributes = [attribute_1.title(), attribute_2.title()]   
+            self.attributes = [attribute_1.title(), attribute_2.title()]
         else:
             self.attributes = [attribute_1.title()]
         self.rarity = rarity
@@ -165,7 +237,8 @@ class Card:
             if self.type == 'creature':
                 return t.format(self.cost, self.power, self.health)
             elif self.type == 'item':
-                return t.format(self.cost, '+{}'.format(self.power), '+{}'.format(self.health))
+                return t.format(self.cost, '+{}'.format(self.power),
+                                '+{}'.format(self.health))
             else:
                 return t.format(self.cost, '?', '?')
 
@@ -178,7 +251,8 @@ class Card:
             type=self.type.title(),
             mana=self.cost,
             stats=_format_stats('{} - {}/{}'),
-            keywords=', '.join(map(str, self.keywords)) + '' if len(self.keywords) > 0 else 'None',
+            keywords=', '.join(map(str, self.keywords)) + '' if len(
+                self.keywords) > 0 else 'None',
             text=self.text if len(self.text) > 0 else 'This card has no text.'
         )
 
@@ -190,9 +264,11 @@ class TESLCardBot:
         return remove_duplicates(TESLCardBot.CARD_MENTION_REGEX.findall(s))
 
     def _get_praw_instance(self):
-        r = praw.Reddit(client_id=os.environ['CLIENT_ID'], client_secret=os.environ['CLIENT_SECRET'], 
-        user_agent='Python TESL Bot 9000.01 u/tesl-bot-9000', username=os.environ['REDDIT_USERNAME'], 
-        password=os.environ['REDDIT_PASSWORD'])
+        r = praw.Reddit(client_id=os.environ['CLIENT_ID'],
+                        client_secret=os.environ['CLIENT_SECRET'],
+                        user_agent='Python TESL Bot 9000.01 u/tesl-bot-9000',
+                        username=os.environ['REDDIT_USERNAME'],
+                        password=os.environ['REDDIT_PASSWORD'])
         return r
 
     def _process_submission(self, s):
@@ -227,6 +303,7 @@ class TESLCardBot:
                    'Rarity | Text \n--|--|--|--|--|--|--|--\n'
 
         cards_not_found = []
+        cards_not_sure = {}
 
         for name in cards:
             card = Card.get_info(name)
@@ -234,16 +311,20 @@ class TESLCardBot:
                 cards_not_found.append(name)
             else:
                 response += '{}\n'.format(str(card))
+                # this should mean there was a typo in the input
+                if Card._escape_name(name) not in Card._escape_name(card.name):
+                    cards_not_sure[name] = card
 
-        did_you_know = random.choice(['You can hover the camera emoji to read a card\'s text!',
-                                      'I can do partial matches!',
-                                      'I was made in Python 🐍',
-                                      'My code is open-source and anyone can contribute to it.',
-                                      'I might hide a few easter eggs.',
-                                      'You can send your suggestions to my maintainer, no matter how insignificant. '
-                                      'Or you can open an issue on GitHub.',
-                                      'My maintainer doesn\'t actively monitor this sub, or my replies, so PM him if you need anything.',
-                                      ])
+        did_you_know = random.choice(
+            ['You can hover the camera emoji to read a card\'s text!',
+             'I can do partial matches!',
+             'I was made in Python 🐍',
+             'My code is open-source and anyone can contribute to it.',
+             'I might hide a few easter eggs.',
+             'You can send your suggestions to my maintainer, no matter how insignificant. '
+             'Or you can open an issue on GitHub.',
+             'My maintainer doesn\'t actively monitor this sub, or my replies, so PM him if you need anything.',
+             ])
         auto_word = random.choice(['automatically', 'automagically'])
 
         if len(cards_not_found) == len(cards):
@@ -252,13 +333,20 @@ class TESLCardBot:
         elif len(cards_not_found) > 0:
             response += '\n^(Some of the cards you mentioned were not matched: _{}._ ' \
                         'Tokens and other generated cards may be included soon.)\n'.format(', '.join(cards_not_found))
-
+        if len(cards_not_sure) > 0:
+            response += '\n^(Some of the cards were written with typos, but I tried to guess them anyway. ' \
+                        'Did I guess these correctly?)\n'
+            for k in cards_not_sure:
+                response += '^({} is interpreted as {})\n'.format(k,
+                                                                  cards_not_sure[
+                                                                      k])
         response += '\n**Did you know?** _{}_\n\n' \
                     '\n\n&nbsp;\n\n^(_I am a bot, and this action was performed {}. Created by user G3Kappa. ' \
                     'Maintained by NotGooseFromTopGun. ' \
                     'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
-                    'message/compose/?to={})'.format(did_you_know, auto_word, self.author)
+                    'message/compose/?to={})'.format(did_you_know, auto_word,
+                                                     self.author)
         return response
 
     def log(self, msg):
@@ -276,15 +364,16 @@ class TESLCardBot:
 
         already_done = []
         subreddit = r.subreddit(self.target_sub)
-        
+
         while True:
             try:
-                new_submissions = [s for s in subreddit.new(limit=batch_limit) if s.id not in already_done]
+                new_submissions = [s for s in subreddit.new(limit=batch_limit)
+                                   if s.id not in already_done]
                 # new_submissions = subreddit.stream.submissions()
 
                 # new_comments = [c for c in r.subreddit(self.target_sub).stream.comments() if c.id not in already_done]
-                new_comments = r.subreddit(self.target_sub).stream.comments() 
-                
+                new_comments = r.subreddit(self.target_sub).stream.comments()
+
             except PrawcoreException as e:
                 # print(subreddit)
                 # print(r.user.me())
