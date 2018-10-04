@@ -113,7 +113,6 @@ class Card:
             if ind > best_similarity:
                 best_match = x
                 best_similarity = ind
-            print(x['name'], ind)
 
         return best_match, best_similarity
 
