@@ -76,7 +76,7 @@ class Card:
         return [x for x in list1 if x in list2]
 
     @staticmethod
-    def get_similarity_index(word1, word2):
+    def _get_similarity_index(word1, word2):
         bigrams1 = Card._get_bigrams(word1)
         bigrams2 = Card._get_bigrams(word2)
         return len(Card._get_intersection(bigrams1, bigrams2)) / len(
@@ -108,10 +108,13 @@ class Card:
         best_match = None
         best_similarity = 0
         for x in Card.JSON_DATA:
-            ind = Card.get_similarity_index(Card._escape_name(name),
-                                            Card._escape_name(x['name']))
+            ind = Card._get_similarity_index(Card._escape_name(name),
+                                             Card._escape_name(x['name']))
             if ind > best_similarity:
                 best_match = x
+                best_similarity = ind
+            print(x['name'], ind)
+
         return best_match, best_similarity
 
     @staticmethod
@@ -337,9 +340,7 @@ class TESLCardBot:
             response += '\n^(Some of the cards were written with typos, but I tried to guess them anyway. ' \
                         'Did I guess these correctly?)\n'
             for k in cards_not_sure:
-                response += '^({} is interpreted as {})\n'.format(k,
-                                                                  cards_not_sure[
-                                                                      k])
+                response += '^({} is interpreted as {})\n'.format(k,cards_not_sure[k].name)
         response += '\n**Did you know?** _{}_\n\n' \
                     '\n\n&nbsp;\n\n^(_I am a bot, and this action was performed {}. Created by user G3Kappa. ' \
                     'Maintained by NotGooseFromTopGun. ' \
