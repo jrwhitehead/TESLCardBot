@@ -107,12 +107,32 @@ class Card:
         """
         best_match = None
         best_similarity = 0
+        all_sims = []
         for x in Card.JSON_DATA:
             ind = Card._get_similarity_index(Card._escape_name(name),
                                              Card._escape_name(x['name']))
+            all_sims.append(ind)
             if ind > best_similarity:
                 best_match = x
                 best_similarity = ind
+            elif ind == best_similarity and best_match is not None:
+                # if we met a collision, we check corresponding letters in each word
+                prev_matching_letters = 0
+                new_matching_letters = 0
+                for i in range(min(len(name), len(x['name']), len(best_match['name']))):
+                    if x['name'][i] == name[i]:
+                        new_matching_letters += 1
+                    if best_match['name'][i] == name[i]:
+                        prev_matching_letters += 1
+                # if the new match has more similarities in letter order than the previous one,
+                # or if letter order is similar, but the length of the second one is closer to the query,
+                # we assume the new one is the correct one
+                if new_matching_letters > prev_matching_letters or \
+                    new_matching_letters == prev_matching_letters and \
+                        abs(len(name) - len(x['name'])) < abs(len(name) - len(best_match['name'])):
+                    best_match = x
+                    best_similarity = ind
+
 
         return best_match, best_similarity
 
