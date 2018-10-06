@@ -615,7 +615,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Level 1: Give an enemy creature -1/-1.\r\nLevel 2: Give an enemy creature -2/-2. \r\nLevel 3: Give all enemy creatures in a lane -2/-2."
+    "text": "Level 1: Give an enemy creature -1/-1. Level 2: Give an enemy creature -2/-2. Level 3: Give all enemy creatures in a lane -2/-2."
   },
   {
     "name": "Draugr Sentry",
@@ -2813,7 +2813,7 @@
     "attack": "2",
     "health": "2",
     "race": "khajiit",
-    "text": "Treasure Hunt - Drain: +1/+1 and Drain.\r\nTreasure Hunt - Lethal: +1/+1 and Lethal."
+    "text": "Treasure Hunt - Drain: +1/+1 and Drain. Treasure Hunt - Lethal: +1/+1 and Lethal."
   },
   {
     "name": "Seyda Neen Courier",
@@ -3813,7 +3813,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Level 1: Summon a 3/3 Sovngarde Hero.\r\nLevel 2: Summon two 3/3 Sovngarde Heroes.\r\nLevel 3: Fill a lane with 3/3 Sovngarde Heroes."
+    "text": "Level 1: Summon a 3/3 Sovngarde Hero.\nLevel 2: Summon two 3/3 Sovngarde Heroes.\nLevel 3: Fill a lane with 3/3 Sovngarde Heroes."
   },
   {
     "name": "Camlorn Adventurer",
@@ -4326,7 +4326,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Level 1: Deal 2 damage to a creature.\r\nLevel 2: Deal 4 damage to a creature.\r\nLevel 3: Deal 10 damage to a creature."
+    "text": "Level 1: Deal 2 damage to a creature.\nLevel 2: Deal 4 damage to a creature.\nLevel 3: Deal 10 damage to a creature."
   },
   {
     "name": "Flesh Sculpture",
@@ -5287,7 +5287,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Level 1: Draw a creature from your discard pile. \r\nLevel 2: Draw a creature from your discard pile and give it +2/+2. \r\nLevel 3: Draw a creature from your discard pile and give it +5/+5."
+    "text": "Level 1: Draw a creature from your discard pile. \nLevel 2: Draw a creature from your discard pile and give it +2/+2. \nLevel 3: Draw a creature from your discard pile and give it +5/+5."
   },
   {
     "name": "Sovngarde Hero",
@@ -5627,7 +5627,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Level 1:\r\nUnsummon an enemy creature with power 3 or less.\r\n\r\nLevel 2:\r\nUnsummon an enemy creature.\r\n\r\nLevel 3:\r\nUnsummon all enemy creatures in a lane."
+    "text": "Level 1:\nUnsummon an enemy creature with power 3 or less.\n\nLevel 2:\nUnsummon an enemy creature.\n\nLevel 3:\nUnsummon all enemy creatures in a lane."
   },
   {
     "name": "Valenwood Huntsman",
@@ -6329,7 +6329,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Level 1: You gain 3 health and Battle an enemy creature as if you had 3 power. \r\nLevel 2: You gain 5 health and Battle an enemy creature as if you had 5 power.\r\nLevel 3: You gain 7 health and Battle an enemy creature as if you had 7 power."
+    "text": "Level 1: You gain 3 health and Battle an enemy creature as if you had 3 power. \nLevel 2: You gain 5 health and Battle an enemy creature as if you had 5 power.\nLevel 3: You gain 7 health and Battle an enemy creature as if you had 7 power."
   },
   {
     "name": "Dragon's Fury",
@@ -6523,7 +6523,7 @@
     "attack": "0",
     "health": "0",
     "race": "",
-    "text": "Experimental Scroll is either Enlightenment, Flame Blast, or Flame Cloak. Don't worry which one it is. Just give it a try.\r\nElnightenment: Give each friendly creature two random Keywords.\r\nFlame Blast: Deal 2 damage to each enemy creature.\r\nFlame Cloak: Deal 5 damage to each player."
+    "text": "Experimental Scroll is either Enlightenment, Flame Blast, or Flame Cloak. Don't worry which one it is. Just give it a try.\nElnightenment: Give each friendly creature two random Keywords.\nFlame Blast: Deal 2 damage to each enemy creature.\nFlame Cloak: Deal 5 damage to each player."
   },
   {
     "name": "Falkreath Defiler",
@@ -6820,7 +6820,7 @@
     "attribute_2": "",
     "cost": "4",
     "race": "",
-    "text": "Summon: +1 max magicka.\r\nAt the start of your turn, if you have 15 or more max magicka, sacrifice this to summon an 8/8 Swamp Leviathan in each lane."
+    "text": "Summon: +1 max magicka. At the start of your turn, if you have 15 or more max magicka, sacrifice this to summon an 8/8 Swamp Leviathan in each lane."
   },
   {
     "name": "Hit and Run",
