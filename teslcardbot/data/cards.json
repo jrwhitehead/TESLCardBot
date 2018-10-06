@@ -10844,6 +10844,19 @@
     "text": "Destroy an enemy creature. Give all friendly creatures in its lane +1/+1."
   },
   {
+    "name": "Saint Jiub",
+    "rarity": "Legendary",
+    "isunique": true,
+    "type": "creature",
+    "attribute_1": "neutral",
+    "attribute_2": "",
+    "cost": "5",
+    "attack": "5",
+    "health": "5",
+    "race": "darkelf",
+    "text": "Can't be damaged or targeted by Cliff Racers, Cliff Hunters or Cliff Striders."
+  },
+  {
     "name": "Savage Ogre",
     "rarity": "Common",
     "isunique": false,
@@ -10913,7 +10926,7 @@
     "type": "creature",
     "attribute_1": "intelligence",
     "attribute_2": "willpower",
-	"attribute_3": "endurance",
+    "attribute_3": "endurance",
     "cost": "7",
     "attack": "5",
     "health": "5",
