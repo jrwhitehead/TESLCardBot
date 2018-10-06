@@ -134,7 +134,7 @@ class Card:
                     best_similarity = ind
 
 
-        return best_match, best_similarity
+        return [best_match], best_similarity
 
     @staticmethod
     def _fetch_data_partial(name):
@@ -149,14 +149,11 @@ class Card:
                            s['name'])]
             i += 1
 
-        if len(matches) == 0:
-            return None
-
-        match = matches[0]
-        print(matches)
-        if Card._escape_name(name) in Card._escape_name(match['name']):
-            return match
-        return None
+        res = []
+        for match in matches:
+            if Card._escape_name(name) in Card._escape_name(match['name']):
+                res.append(match)
+        return res
 
     @staticmethod
     def get_info(name):
@@ -179,57 +176,60 @@ class Card:
 
         data = Card._fetch_data_partial(name)
 
-        if data is None:
+        if not data:
             # Attempting to guess a card that is written with a typo
             data, index = Card._get_data_with_typo(name)
 
-        if data is None or index < 0.25:
+        if data[0] is None or index < 0.25:
             # if we found literally nothing (which is unlikely), or they aren't similar enough, quit
             # 0.25 is chosen from the top of my head, may need tweaking
             return None
-        img_url = Card.CARD_IMAGE_BASE_URL.format(
-            Card._escape_name(data['name']))
-        # Unlikely, but possible?
-        if not Card._img_exists(img_url):
-            img_url = Card.CARD_IMAGE_404_URL
-
-        name = data['name']
-        type = data['type']
-        attr_1 = data['attribute_1']
-        if 'attribute_2' in data:
-            attr_2 = data['attribute_2']
-        else:
-            attr_2 = ''
-        if 'attribute_3' in data:
-            attr_3 = data['attribute_3']
-        else:
-            attr_3 = ''
-        rarity = data['rarity']
-        unique = data['isunique'] == 'true'
-        cost = int(data['cost'])
-        text = data['text']
-        power = ''
-        health = ''
-        if type == 'creature':
-            power = int(data['attack'])
-            health = int(data['health'])
-        elif type == 'item':
-            # Stats granted by items are extracted from their text
-            stats = re.findall(r'\+(\d)/\+(\d)', text)
-            power, health = stats[0]
-
-        return Card(name=name,
-                    img_url=img_url,
-                    type=type,
-                    attribute_1=attr_1,
-                    attribute_2=attr_2,
-                    attribute_3=attr_3,
-                    rarity=rarity,
-                    unique=unique,
-                    cost=cost,
-                    power=power,
-                    health=health,
-                    text=text)
+        res = []
+        for card in data:
+            img_url = Card.CARD_IMAGE_BASE_URL.format(
+                Card._escape_name(card['name']))
+            # Unlikely, but possible?
+            if not Card._img_exists(img_url):
+                img_url = Card.CARD_IMAGE_404_URL
+    
+            name = card['name']
+            type = card['type']
+            attr_1 = card['attribute_1']
+            if 'attribute_2' in card:
+                attr_2 = card['attribute_2']
+            else:
+                attr_2 = ''
+            if 'attribute_3' in card:
+                attr_3 = card['attribute_3']
+            else:
+                attr_3 = ''
+            rarity = card['rarity']
+            unique = card['isunique'] == True
+            cost = int(card['cost'])
+            text = card['text']
+            power = ''
+            health = ''
+            if type == 'creature':
+                power = int(card['attack'])
+                health = int(card['health'])
+            elif type == 'item':
+                # Stats granted by items are extracted from their text
+                stats = re.findall(r'\+(\d)/\+(\d)', text)
+                power, health = stats[0]
+    
+            res.append(Card(name=name,
+                        img_url=img_url,
+                        type=type,
+                        attribute_1=attr_1,
+                        attribute_2=attr_2,
+                        attribute_3=attr_3,
+                        rarity=rarity,
+                        unique=unique,
+                        cost=cost,
+                        power=power,
+                        health=health,
+                        text=text))
+        return res
 
     def __init__(self, name, img_url, type='Creature', attribute_1='neutral',
                  attribute_2='', attribute_3='', text='', rarity='Common',
@@ -329,14 +329,21 @@ class TESLCardBot:
         cards_not_sure = {}
 
         for name in cards:
-            card = Card.get_info(name)
-            if card is None:
+            cards = Card.get_info(name)
+            if cards is None:
                 cards_not_found.append(name)
             else:
-                response += '{}\n'.format(str(card))
-                # this should mean there was a typo in the input
-                if Card._escape_name(name) not in Card._escape_name(card.name):
-                    cards_not_sure[name] = card
+                too_long = ""
+                if len(cards) > 5: # just making sure the comment isn't too long
+                    cards = cards[:5]
+                    too_long = "^(Your query matched with too many cards to display at once. Could you be more specific please?)\n"
+                for card in cards:
+                    response += '{}\n'.format(str(card))
+                    # this should mean there was a typo in the input
+                    if Card._escape_name(name) not in Card._escape_name(card.name):
+                        cards_not_sure[name] = card
+                if too_long:
+                    response += too_long
 
         did_you_know = random.choice(
             ['You can hover the camera emoji to read a card\'s text!',

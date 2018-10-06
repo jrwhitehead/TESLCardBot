@@ -31,14 +31,11 @@ class TestParsingFunctions(unittest.TestCase):
         self.assertEqual(Card._extract_keywords('Breakthrough, Charge, Last Gasp: Summon a meme'), ['Breakthrough', 'Charge', 'Last Gasp'])
 
     def test_fetch_data_partial(self):
-        self.assertEqual(Card._fetch_data_partial('tyr')['name'], 'Tyr')
-        self.assertEqual(Card._fetch_data_partial('lesser')['name'], 'Lesser Ward')
-        self.assertEqual(Card._fetch_data_partial('gortwog')['name'], 'Gortwog gro-Nagorm')
-        self.assertEqual(Card._fetch_data_partial('Breton Conjurer')['name'], 'Breton Conjurer')
-        self.assertEqual(Card._fetch_data_partial('quinrawl')['name'], 'Quin\'rawl Burglar')
-        # Atronachs are not in the DB yet
-        # TODO: Remove when atronachs are in the DB
-        self.assertEqual(Card._fetch_data_partial('Storm Atronach'), None)
+        self.assertEqual(Card._fetch_data_partial('tyr')[0]['name'], 'Tyr')
+        self.assertEqual(Card._fetch_data_partial('lesser')[0]['name'], 'Lesser Ward')
+        self.assertEqual(Card._fetch_data_partial('gortwog')[0]['name'], 'Gortwog gro-Nagorm')
+        self.assertEqual(Card._fetch_data_partial('Breton Conjurer')[0]['name'], 'Breton Conjurer')
+        self.assertEqual(Card._fetch_data_partial('quinrawl')[0]['name'], 'Quin\'rawl Burglar')
 
     def test_get_info(self):
         Card.preload_card_data()
@@ -47,15 +44,15 @@ class TestParsingFunctions(unittest.TestCase):
         # print(str(Card.get_info('lesser ward')))
         print(str(Card.get_info('dawnbreaker')))
 
-        self.assertEqual(str(Card.get_info('tyr')), '[📷](http://www.legends-decks.com/img_cards/tyr.png) Tyr '
+        self.assertEqual(str(Card.get_info('tyr')[0]), '[📷](http://www.legends-decks.com/img_cards/tyr.png) Tyr '
                                                     '| Creature | 4 - 5/4 | Prophecy, Breakthrough, Guard '
                                                     '| Strength/Willpower | Unique Legendary | Prophecy, Breakthrough, Guard')
 
-        self.assertEqual(str(Card.get_info('lesser w')), '[📷](http://www.legends-decks.com/img_cards/'
+        self.assertEqual(str(Card.get_info('lesser w')[0]), '[📷](http://www.legends-decks.com/img_cards/'
                                                          'lesserward.png) Lesser Ward | Action | 0 - ?/? | None '
                                                          '| Intelligence | Common | Give a creature a Ward.')
 
-        self.assertEqual(str(Card.get_info('dawnb')), '[📷](http://www.legends-decks.com/img_cards/dawnbreaker.png) '
+        self.assertEqual(str(Card.get_info('dawnb')[0]), '[📷](http://www.legends-decks.com/img_cards/dawnbreaker.png) '
                                                      'Dawnbreaker | Item | 4 - +4/+4 | Summon | Willpower '
                                                      '| Unique Legendary | +4/+4. Summon: Destroy an enemy Undead.')
 
