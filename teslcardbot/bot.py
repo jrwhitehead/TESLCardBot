@@ -336,7 +336,7 @@ class TESLCardBot:
                 too_long = ""
                 if len(cards) > 5: # just making sure the comment isn't too long
                     cards = cards[:5]
-                    too_long = '\n Your query matched with too many cards to display at once. Could you be more specific please?\n"
+                    too_long = '\n Your query matched with too many cards to display at once. Could you be more specific please?\n'
                 for card in cards:
                     response += '{}\n'.format(str(card))
                     # this should mean there was a typo in the input
