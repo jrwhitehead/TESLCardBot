@@ -7830,7 +7830,7 @@
     "isunique": true,
     "type": "creature",
     "attribute_1": "strength",
-    "attribute_2": "",
+    "attribute_2": "willpower",
     "cost": "4",
     "attack": "5",
     "health": "4",
