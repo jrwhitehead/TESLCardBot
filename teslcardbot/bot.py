@@ -336,26 +336,14 @@ class TESLCardBot:
                 too_long = ""
                 if len(cards) > 5: # just making sure the comment isn't too long
                     cards = cards[:5]
-                    too_long = "^(Your query matched with too many cards to display at once. Could you be more specific please?)\n"
+                    too_long = '\n Your query matched with too many cards to display at once. Could you be more specific please?\n"
                 for card in cards:
                     response += '{}\n'.format(str(card))
                     # this should mean there was a typo in the input
                     if Card._escape_name(name) not in Card._escape_name(card.name):
                         cards_not_sure[name] = card
-                if too_long:
-                    response += too_long
-
-        did_you_know = random.choice(
-            ['You can hover the camera emoji to read a card\'s text!',
-             'I can do partial matches!',
-             'I was made in Python 🐍',
-             'My code is open-source and anyone can contribute to it.',
-             'I might hide a few easter eggs.',
-             'You can send your suggestions to my maintainer, no matter how insignificant. '
-             'Or you can open an issue on GitHub.',
-             'My maintainer doesn\'t actively monitor this sub, or my replies, so PM him if you need anything.',
-             ])
-        auto_word = random.choice(['automatically', 'automagically'])
+        if too_long:
+            response += too_long
 
         if len(cards_not_found) == len(cards):
             response = 'I\'m sorry, but none of the cards you mentioned were matched. ' \
@@ -369,12 +357,11 @@ class TESLCardBot:
             for k in cards_not_sure:
                 response += '^({} is interpreted as {})\n'.format(k,cards_not_sure[k].name)
         response += '\n**Did you know?** _{}_\n\n' \
-                    '\n\n&nbsp;\n\n^(_I am a bot, and this action was performed {}. Created by user G3Kappa. ' \
+                    '\n\n\n^(_I am a bot, and this action was performed automatically. Created by user G3Kappa. ' \
                     'Maintained by NotGooseFromTopGun. ' \
                     'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
-                    'message/compose/?to={})'.format(did_you_know, auto_word,
-                                                     self.author)
+                    'message/compose/?to={})'
         return response
 
     def log(self, msg):
