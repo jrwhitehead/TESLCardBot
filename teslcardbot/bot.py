@@ -353,7 +353,7 @@ class TESLCardBot:
             response += '\n^(Some of the cards you mentioned were not matched: _{}._ ' \
                         'Tokens and other generated cards may be included soon.)\n'.format(', '.join(cards_not_found))
         if len(cards_not_sure) > 0:
-            response += '\n(Some of the cards were written with typos, but I tried to guess them anyway. ' \
+            response += '\nSome of the cards were written with typos, but I tried to guess them anyway. ' \
                         'Did I guess these correctly?\n'
             for k in cards_not_sure:
                 response += '\n- {} is interpreted as {}\n'.format(k,cards_not_sure[k].name)
