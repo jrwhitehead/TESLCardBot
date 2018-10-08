@@ -333,7 +333,7 @@ class TESLCardBot:
             if cards is None:
                 cards_not_found.append(name)
             else:
-                too_long = ""
+                too_long = None
                 if len(cards) > 5: # just making sure the comment isn't too long
                     cards = cards[:5]
                     too_long = '\n Your query matched with too many cards to display at once. Could you be more specific please?\n'
