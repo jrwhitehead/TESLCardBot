@@ -324,7 +324,8 @@ class TESLCardBot:
     def build_response(self, cards):
         response = 'Name | Type | Stats | Keywords | Attribute | ' \
                    'Rarity | Text \n--|--|--|--|--|--|--|--\n'
-
+        
+        too_long = None
         cards_not_found = []
         cards_not_sure = {}
 
