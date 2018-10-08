@@ -327,26 +327,25 @@ class TESLCardBot:
 
         cards_not_found = []
         cards_not_sure = {}
-        too_long = 'nope'
 
         for name in cards:
             cards = Card.get_info(name)
             if cards is None:
                 cards_not_found.append(name)
             else:
-                #too_long = None
+                too_long = False
                 if len(cards) > 5: # just making sure the comment isn't too long
                     cards = cards[:5]
-                    too_long = '\n Your query matched with too many cards to display at once. Could you be more specific please?\n'
+                    too_long = True
                 for card in cards:
                     response += '{}\n'.format(str(card))
                     # this should mean there was a typo in the input
                     if Card._escape_name(name) not in Card._escape_name(card.name):
                         cards_not_sure[name] = card
-        if too_long != 'nope':
-            response += too_long
+        if too_long == True:
+            response += '\n Your query matched with too many cards to display at once. Could you be more specific please?\n'
 
-        if len(cards_not_found) == len(cards):
+        if len(cards_not_found) == 1:
             response = 'I\'m sorry, but none of the cards you mentioned were matched. ' \
                        'Tokens and other generated cards may be included soon.\n'
         elif len(cards_not_found) > 0:
