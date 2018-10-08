@@ -343,7 +343,7 @@ class TESLCardBot:
                     # this should mean there was a typo in the input
                     if Card._escape_name(name) not in Card._escape_name(card.name):
                         cards_not_sure[name] = card
-        if too long! = 'nope':
+        if too_long != 'nope':
             response += too_long
 
         if len(cards_not_found) == len(cards):
