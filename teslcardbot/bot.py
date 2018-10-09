@@ -366,7 +366,7 @@ class TESLCardBot:
                     'Maintained by NotGooseFromTopGun. ' \
                     'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
-                    'message/compose/?to={})'
+                    'message/compose/?to={})'.format(self.author)
         return response
 
     def log(self, msg):
