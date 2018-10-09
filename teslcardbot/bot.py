@@ -180,7 +180,7 @@ class Card:
             # Attempting to guess a card that is written with a typo
             data, index = Card._get_data_with_typo(name)
 
-        if data[0] is None or index < 0.25:
+        if data[0] is None or index < 0.28:
             # if we found literally nothing (which is unlikely), or they aren't similar enough, quit
             # 0.25 is chosen from the top of my head, may need tweaking
             return None
@@ -324,18 +324,23 @@ class TESLCardBot:
     def build_response(self, cards):
         response = 'Name | Type | Stats | Keywords | Attribute | ' \
                    'Rarity | Text \n--|--|--|--|--|--|--|--\n'
-        
         too_long = None
         cards_not_found = []
         cards_not_sure = {}
-
+        card_quantity = 0
+        cards_found = 0
+        		
+						  
         for name in cards:
             cards = Card.get_info(name)
             if cards is None:
                 cards_not_found.append(name)
+                card_quantity += 1
             else:
+                card_quantity += 1
                 too_long = False
                 if len(cards) > 5: # just making sure the comment isn't too long
+                    cards_found = int(len(cards)) - 5
                     cards = cards[:5]
                     too_long = True
                 for card in cards:
@@ -343,17 +348,17 @@ class TESLCardBot:
                     # this should mean there was a typo in the input
                     if Card._escape_name(name) not in Card._escape_name(card.name):
                         cards_not_sure[name] = card
-        if too_long == True:
-            response += '\n Your query matched with too many cards to display at once. Could you be more specific please?\n'
 
-        if len(cards_not_found) == 1:
+        if too_long == True:
+            response += '\n Your query matched with too many cards. {} further results were omitted. Could you be more specific please?\n'.format(cards_found)
+        if len(cards_not_found) == card_quantity:
             response = 'I\'m sorry, but none of the cards you mentioned were matched. ' \
                        'Tokens and other generated cards may be included soon.\n'
         elif len(cards_not_found) > 0:
-            response += '\n^(Some of the cards you mentioned were not matched: _{}._ ' \
-                        'Tokens and other generated cards may be included soon.)\n'.format(', '.join(cards_not_found))
+            response += '\nOne or more of the cards you mentioned were not matched: _{}._ ' \
+                        'Tokens and other generated cards may be included soon.\n'.format(', '.join(cards_not_found))
         if len(cards_not_sure) > 0:
-            response += '\nSome of the cards were written with typos, but I tried to guess them anyway. ' \
+            response += '\nSome of the cards may have been written with typos, but I tried to guess them anyway. ' \
                         'Did I guess these correctly?\n'
             for k in cards_not_sure:
                 response += '\n- {} is interpreted as {}\n'.format(k,cards_not_sure[k].name)
@@ -365,7 +370,7 @@ class TESLCardBot:
         return response
 
     def log(self, msg):
-        print('TESLCardBot # {}'.format(msg))
+        print('tesl-bot-9000 # {}'.format(msg))
 
     def start(self, batch_limit=10, buffer_size=1000):
         r = None
@@ -390,8 +395,6 @@ class TESLCardBot:
                 new_comments = r.subreddit(self.target_sub).stream.comments()
 
             except PrawcoreException as e:
-                # print(subreddit)
-                # print(r.user.me())
                 self.log('Reddit seems to be down! Aborting.')
                 self.log(e)
                 return
