@@ -387,12 +387,10 @@ class TESLCardBot:
 
         while True:
             try:
-                new_submissions = [s for s in subreddit.new(limit=batch_limit)
-                                   if s.id not in already_done]
-                # new_submissions = subreddit.stream.submissions()
-
-                # new_comments = [c for c in r.subreddit(self.target_sub).stream.comments() if c.id not in already_done]
-                new_comments = r.subreddit(self.target_sub).stream.comments()
+                # Updated the method of acquiring comments and submission as new submissions were not being caught
+                # Method from here: https://www.reddit.com/r/redditdev/comments/7vj6ox/can_i_do_other_things_with_praw_while_reading/dtszfzb/?context=3
+                new_submissions = r.subreddit(self.target_sub).stream.submissions(pause_after=-1) 
+                new_comments = r.subreddit(self.target_sub).stream.comments(pause_after=-1)
 
             except PrawcoreException as e:
                 self.log('Reddit seems to be down! Aborting.')
@@ -400,10 +398,14 @@ class TESLCardBot:
                 return
 
             for s in new_submissions:
+                if s is None:
+                    break # This causes stream to switch to comments stream
                 self._process_submission(s)
                 # The bot will also save submissions it replies to to prevent double-posting.
                 already_done.append(s.id)
             for c in new_comments:
+                if c is None:
+                    break # This causes stream to switch to submissions stream
                 self._process_comment(c)
                 # The bot will also save comments it replies to to prevent double-posting.
                 already_done.append(c.id)
