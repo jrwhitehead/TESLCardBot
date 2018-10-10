@@ -132,8 +132,6 @@ class Card:
                         abs(len(name) - len(x['name'])) < abs(len(name) - len(best_match['name'])):
                     best_match = x
                     best_similarity = ind
-
-
         return [best_match], best_similarity
 
     @staticmethod
@@ -141,9 +139,6 @@ class Card:
         i = 0
         matches = ['', '']
         while len(matches) > 1 and i <= Card.PARTIAL_MATCH_END_LENGTH:
-            # matches = [s for s in Card.JSON_DATA if Card._escape_name(s['name']).startswith(Card._escape_name(name[:i]))]
-            # imho, we should be checking if the partial match is anywhere in the name
-            # so {{atro}} query should return Supreme Atromancer
             matches = [s for s in Card.JSON_DATA if
                        Card._escape_name(name[:i]) in Card._escape_name(
                            s['name'])]
@@ -176,14 +171,16 @@ class Card:
 
         data = Card._fetch_data_partial(name)
 
-        # We handle some common card nicknames here	
+		# We handle some common card nicknames here	
+        print(name)
         if 'tazdaddy' in name.lower():
             name = 'tazkad the packmaster'
         if 'dangernoodle' in name.lower():
             name = 'giant bat'
         if 'bonedaddy' in name.lower():
             name = 'bone colossus'
-
+        print(name)
+		
         if not data:
             # Attempting to guess a card that is written with a typo
             data, index = Card._get_data_with_typo(name)
@@ -261,17 +258,17 @@ class Card:
         self.keywords = Card._extract_keywords(text)
 
     def __str__(self):
-        template = '[📷]({url}) {name} ' \
-                   '| {type} | {stats} | {keywords} | {attrs} | {unique}{rarity} | {text}'
+        template = ' [{name}]({url}) ' \
+                   '| {type} | {mana} | {stats} | {keywords} | {attrs} | {unique}{rarity} | {text}'
 
         def _format_stats(t):
             if self.type == 'creature':
-                return t.format(self.cost, self.power, self.health)
+                return t.format(self.power, self.health)
             elif self.type == 'item':
-                return t.format(self.cost, '+{}'.format(self.power),
+                return t.format('+{}'.format(self.power),
                                 '+{}'.format(self.health))
             else:
-                return t.format(self.cost, '?', '?')
+                return t.format('?', '?')
 
         return template.format(
             attrs='/'.join(map(str, self.attributes)),
@@ -281,7 +278,7 @@ class Card:
             url=self.img_url,
             type=self.type.title(),
             mana=self.cost,
-            stats=_format_stats('{} - {}/{}'),
+            stats=_format_stats('{}/{}'),
             keywords=', '.join(map(str, self.keywords)) + '' if len(
                 self.keywords) > 0 else 'None',
             text=self.text if len(self.text) > 0 else 'This card has no text.'
@@ -330,15 +327,14 @@ class TESLCardBot:
 
     # TODO: Make this template-able, maybe?
     def build_response(self, cards):
-        response = 'Name | Type | Stats | Keywords | Attribute | ' \
-                   'Rarity | Text \n--|--|--|--|--|--|--|--\n'
+        response = ' | **Name** | **Type** | **Cost** | **Stats** | **Keywords** | **Attribute** | ' \
+                   '**Rarity** | **Text** \n--|--|--|--|--|--|--|--\n'
         too_long = None
         cards_not_found = []
         cards_not_sure = {}
         card_quantity = 0
         cards_found = 0
-        		
-						  
+				  
         for name in cards:
             cards = Card.get_info(name)
             if cards is None:
@@ -395,8 +391,8 @@ class TESLCardBot:
 
         while True:
             try:
-                # Updated the method of acquiring comments and submission as new submissions were not being caught
-                # Method from here: https://www.reddit.com/r/redditdev/comments/7vj6ox/can_i_do_other_things_with_praw_while_reading/dtszfzb/?context=3
+		# Updated the method of acquiring comments and submission as new submissions were not being caught
+		# Method from here: https://www.reddit.com/r/redditdev/comments/7vj6ox/can_i_do_other_things_with_praw_while_reading/dtszfzb/?context=3
                 new_submissions = r.subreddit(self.target_sub).stream.submissions(pause_after=-1) 
                 new_comments = r.subreddit(self.target_sub).stream.comments(pause_after=-1)
 
@@ -407,13 +403,13 @@ class TESLCardBot:
 
             for s in new_submissions:
                 if s is None:
-                    break # This causes stream to switch to comments stream
+                    break
                 self._process_submission(s)
                 # The bot will also save submissions it replies to to prevent double-posting.
                 already_done.append(s.id)
             for c in new_comments:
                 if c is None:
-                    break # This causes stream to switch to submissions stream
+                    break
                 self._process_comment(c)
                 # The bot will also save comments it replies to to prevent double-posting.
                 already_done.append(c.id)
