@@ -174,6 +174,14 @@ class Card:
             Card.preload_card_data()
             assert (len(Card.JSON_DATA) > 0)
 
+        # We handle some common card nicknames here	
+        if 'tazdaddy' in name.lower():
+            name = 'tazkad the packmaster'
+        if 'danger noodle' in name.lower():
+            name = 'giant bat'
+        if 'bone daddy' in name.lower():
+            name = 'bone colossus'
+
         data = Card._fetch_data_partial(name)
 
         if not data:
