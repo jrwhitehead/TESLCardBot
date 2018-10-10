@@ -171,15 +171,13 @@ class Card:
 
         data = Card._fetch_data_partial(name)
 
-		# We handle some common card nicknames here	
-        print(name)
+	# We handle some common card nicknames here	
         if 'tazdaddy' in name.lower():
             name = 'tazkad the packmaster'
         if 'dangernoodle' in name.lower():
             name = 'giant bat'
         if 'bonedaddy' in name.lower():
             name = 'bone colossus'
-        print(name)
 		
         if not data:
             # Attempting to guess a card that is written with a typo
