@@ -224,7 +224,9 @@ class Card:
                 # Stats granted by items are extracted from their text
                 stats = re.findall(r'\+(\d)/\+(\d)', text)
                 power, health = stats[0]
-    
+            else:
+                stats = None
+				
             res.append(Card(name=name,
                         img_url=img_url,
                         type=type,
@@ -262,16 +264,16 @@ class Card:
 
     def __str__(self):
         template = ' **[{name}]({url})** ' \
-                   '| {type} |  {mana} | {stats} | {keywords} | {attrs} | {unique}{rarity} | {text}'
+                   '| {stats} {type} |  {mana} | {keywords} | {attrs} | {unique}{rarity} | {text}'
 
         def _format_stats(t):
             if self.type == 'creature':
-                return t.format(self.power, self.health)
+                return t.format('{}/'.format(self.power), '{}'.format(self.health))
             elif self.type == 'item':
-                return t.format('+{}'.format(self.power),
+                return t.format('+{}/'.format(self.power),
                                 '+{}'.format(self.health))
             else:
-                return t.format('?', '?')
+                return t.format('','')
 
         return template.format(
             attrs='/'.join(map(str, self.attributes)),
@@ -281,7 +283,7 @@ class Card:
             url=self.img_url,
             type=self.type.title(),
             mana=self.cost,
-            stats=_format_stats('{}/{}'),
+            stats=_format_stats('{}{}'),
             keywords=', '.join(map(str, self.keywords)) + '' if len(
                 self.keywords) > 0 else 'None',
             text=self.text if len(self.text) > 0 else 'This card has no text.'
@@ -330,8 +332,8 @@ class TESLCardBot:
 
     # TODO: Make this template-able, maybe?
     def build_response(self, cards):
-        response = ' | **Name** | **Type** | **Cost** | **Stats** | **Keywords** | **Attribute** | ' \
-                   '**Rarity** | **Text** \n--|:--:|:--:|:--:|:--:|:--:|:--:|--|--\n'
+        response = ' | **Name** | **Type** | **Cost** | **Keywords** | **Attribute** | ' \
+                   '**Rarity** | **Text** \n--|:--:|:--:|:--:|:--:|:--:|--|--\n'
         too_long = None
         cards_not_found = []
         cards_not_sure = {}
