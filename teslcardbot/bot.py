@@ -306,7 +306,7 @@ class TESLCardBot:
         cards = TESLCardBot.find_card_mentions(s.selftext)
         if len(cards) > 0 and not s.saved:
             try:
-                self.log('Commenting in {} about the following cards: {}'.format(s.title, cards))
+                self.log('Commenting in post by {} titled "{}" about the following cards: {}'.format(s.author, s.title, cards))
                 response = self.build_response(cards)
                 s.reply(response)
                 s.save()
@@ -319,7 +319,7 @@ class TESLCardBot:
         cards = TESLCardBot.find_card_mentions(c.body)
         if len(cards) > 0 and not c.saved and c.author != os.environ['REDDIT_USERNAME']:
             try:
-                self.log('Replying to {} about the following cards: {}'.format(c.id, cards))
+                self.log('Replying to {} in comment id {} about the following cards: {}'.format(c.author, c.id, cards))
                 response = self.build_response(cards)
                 c.reply(response)
                 c.save()
