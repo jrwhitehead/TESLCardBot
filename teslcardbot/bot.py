@@ -171,7 +171,7 @@ class Card:
 
         data = Card._fetch_data_partial(name)
 
-	# We handle some common card nicknames here	
+		# We handle some common card nicknames here	
         if 'tazdaddy' in name.lower():
             name = 'tazkad the packmaster'
         if 'dangernoodle' in name.lower():
@@ -209,6 +209,11 @@ class Card:
             rarity = card['rarity']
             unique = card['isunique'] == True
             cost = int(card['cost'])
+			
+			# change cost to unicode circled number
+            unicodeNumbers = ["⓿","❶","❷","❸","❹","❺","❻","❼","❽","❾","❶⓿","❶❶","❶❷","⑬","⑭","⑮","⑯","⑰","⑱","⑲","❷⓿"]
+            cost = unicodeNumbers[cost]
+
             text = card['text']
             power = ''
             health = ''
@@ -256,8 +261,8 @@ class Card:
         self.keywords = Card._extract_keywords(text)
 
     def __str__(self):
-        template = ' [{name}]({url}) ' \
-                   '| {type} | {mana} | {stats} | {keywords} | {attrs} | {unique}{rarity} | {text}'
+        template = ' **[{name}]({url})** ' \
+                   '| {type} |  {mana} | {stats} | {keywords} | {attrs} | {unique}{rarity} | {text}'
 
         def _format_stats(t):
             if self.type == 'creature':
@@ -326,7 +331,7 @@ class TESLCardBot:
     # TODO: Make this template-able, maybe?
     def build_response(self, cards):
         response = ' | **Name** | **Type** | **Cost** | **Stats** | **Keywords** | **Attribute** | ' \
-                   '**Rarity** | **Text** \n--|--|--|--|--|--|--|--\n'
+                   '**Rarity** | **Text** \n--|:--:|:--:|:--:|:--:|:--:|:--:|--|--\n'
         too_long = None
         cards_not_found = []
         cards_not_sure = {}
