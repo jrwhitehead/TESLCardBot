@@ -6082,7 +6082,7 @@
     "isunique": false,
     "type": "creature",
     "attribute_1": "agility",
-    "attribute_2": "",
+    "attribute_2": "endurance",
     "cost": "4",
     "attack": "3",
     "health": "4",
