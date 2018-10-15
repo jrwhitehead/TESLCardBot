@@ -290,7 +290,9 @@ class Card:
         )
 
 class TESLCardBot:
-    CARD_MENTION_REGEX = re.compile(r'\{\{((?:.*?)+)\}\}')
+    # CARD_MENTION_REGEX = re.compile(r'\{\{((?:.*?)+)\}\}')
+    # Using new regex that doesn't match {{}} with no text.
+    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z]+[A-Za-z ]*)\}\}')
 
     @staticmethod
     def find_card_mentions(s):
