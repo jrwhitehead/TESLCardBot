@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print('tesl-bot-9000 started! (/r/{})'.format(args.target_sub))
+    print('tesl-bot-9000 # Started lurking in (/r/{})'.format(args.target_sub))
     bot = TESLCardBot(author='NotGooseFromTopGun', target_sub=args.target_sub)
     bot.start(batch_limit=10, buffer_size=1000)
-    print('tesl-bot-9000 stopped running.')
+    print('tesl-bot-9000  # Stopped running.')
