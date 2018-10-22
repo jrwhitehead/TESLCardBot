@@ -171,7 +171,7 @@ class Card:
 
         data = Card._fetch_data_partial(name)
 
-		# We handle some common card nicknames here	
+	# We handle some common card nicknames here	
         if 'tazdaddy' in name.lower():
             name = 'tazkad the packmaster'
         if 'dangernoodle' in name.lower():
@@ -210,7 +210,7 @@ class Card:
             unique = card['isunique'] == True
             cost = int(card['cost'])
 			
-			# change cost to unicode circled number
+	    # change cost to unicode circled number
             unicodeNumbers = ["⓿","❶","❷","❸","❹","❺","❻","❼","❽","❾","❶⓿","❶❶","❶❷","⑬","⑭","⑮","⑯","⑰","⑱","⑲","❷⓿"]
             cost = unicodeNumbers[cost]
 
@@ -292,7 +292,7 @@ class Card:
 class TESLCardBot:
     # CARD_MENTION_REGEX = re.compile(r'\{\{((?:.*?)+)\}\}')
     # Using new regex that doesn't match {{}} with no text.
-    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z]+[A-Za-z ]*)\}\}')
+    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z-]+[A-Za-z ]*)\}\}')
 
     @staticmethod
     def find_card_mentions(s):
