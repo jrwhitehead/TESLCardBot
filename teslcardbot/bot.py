@@ -158,8 +158,7 @@ class Card:
             return Card('TESLCardBot',
                         'https://imgs.xkcd.com/comics/tabletop_roleplaying.png',
                         type='Bot',
-                        attribute_1='Python',
-                        attribute_2='JSON',
+                        attributes='Python/JSON',
                         rarity='Legendary',
                         text='If your have more health than your opponent, win the game.',
                         cost='∞', power='∞', health='∞')
@@ -197,15 +196,7 @@ class Card:
     
             name = card['name']
             type = card['type']
-            attr_1 = card['attribute_1']
-            if 'attribute_2' in card:
-                attr_2 = card['attribute_2']
-            else:
-                attr_2 = ''
-            if 'attribute_3' in card:
-                attr_3 = card['attribute_3']
-            else:
-                attr_3 = ''
+            attributes = card['attributes']
             rarity = card['rarity']
             unique = card['isunique'] == True
             cost = int(card['cost'])
@@ -230,9 +221,7 @@ class Card:
             res.append(Card(name=name,
                         img_url=img_url,
                         type=type,
-                        attribute_1=attr_1,
-                        attribute_2=attr_2,
-                        attribute_3=attr_3,
+                        attributes=attributes,
                         rarity=rarity,
                         unique=unique,
                         cost=cost,
@@ -241,19 +230,11 @@ class Card:
                         text=text))
         return res
 
-    def __init__(self, name, img_url, type='Creature', attribute_1='neutral',
-                 attribute_2='', attribute_3='', text='', rarity='Common',
-                 unique=False, cost=0, power=0, health=0):
+    def __init__(self, name, img_url, type='Creature', attributes='neutral', text='', rarity='Common', unique=False, cost=0, power=0, health=0):
         self.name = name
         self.img_url = img_url
         self.type = type
-        if len(attribute_3) > 0:
-            self.attributes = [attribute_1.title(), attribute_2.title(),
-                               attribute_3.title()]
-        elif len(attribute_2) > 0:
-            self.attributes = [attribute_1.title(), attribute_2.title()]
-        else:
-            self.attributes = [attribute_1.title()]
+        self.attributes = attributes
         self.rarity = rarity
         self.unique = unique
         self.cost = cost
@@ -276,7 +257,7 @@ class Card:
                 return t.format('','')
 
         return template.format(
-            attrs='/'.join(map(str, self.attributes)),
+            attrs=self.attributes,
             unique='' if not self.unique else 'Unique ',
             rarity=self.rarity.title(),
             name=self.name,
@@ -290,9 +271,8 @@ class Card:
         )
 
 class TESLCardBot:
-    # CARD_MENTION_REGEX = re.compile(r'\{\{((?:.*?)+)\}\}')
-    # Using new regex that doesn't match {{}} with no text.
-    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z-]+[A-Za-z ]*)\}\}')
+    # Using new regex that doesn't match {{}} with no text or less than 3 chars.
+    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z-\']{3,}[A-Za-z ]*)\}\}')
 
     @staticmethod
     def find_card_mentions(s):
