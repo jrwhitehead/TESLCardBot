@@ -314,8 +314,8 @@ class TESLCardBot:
 
     # TODO: Make this template-able, maybe?
     def build_response(self, cards):
-        response = ' | **Name** | **Type** | **Cost** | **Keywords** | **Attribute** | ' \
-                   '**Rarity** | **Text** \n--|:--:|:--:|:--:|:--:|:--:|--|--\n'
+        response = ' **Name** | **Type** | **Cost** | **Keywords** | **Attribute** | ' \
+                   '**Rarity** | **Text** \n:--:|:--:|:--:|:--:|:--:|:--:|--|--\n'
         too_long = None
         cards_not_found = []
         cards_not_sure = {}
