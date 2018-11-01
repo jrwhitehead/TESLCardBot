@@ -32,9 +32,9 @@ class Card:
         print('tesl-bot-9000 # Downloading cards.json from AWS.')
         cfile = requests.get(url)
         cards = cfile.json()
-        with open('newcards.json', 'w') as f:
+        with open('cards.json', 'w') as f:
             json.dump(cards, f)
-        with open('newcards.json') as f:
+        with open('cards.json') as f:
             Card.JSON_DATA = json.load(f)
         print('tesl-bot-9000 # Finished downloading and saving cards.json.')
 
