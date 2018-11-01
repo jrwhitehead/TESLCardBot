@@ -28,12 +28,15 @@ class Card:
     PARTIAL_MATCH_END_LENGTH = 20
 
     @staticmethod
-    def preload_card_data(path='data/cards.json'):
-        dir = os.path.dirname(__file__)
-        filename = os.path.join(dir, path)
-
-        with open(filename) as f:
+    def preload_card_data(url='http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json'):
+        print('tesl-bot-9000 # Downloading cards.json from AWS.')
+        cfile = requests.get(url)
+        cards = cfile.json()
+        with open('newcards.json', 'w') as f:
+            json.dump(cards, f)
+        with open('newcards.json') as f:
             Card.JSON_DATA = json.load(f)
+        print('tesl-bot-9000 # Finished downloading and saving cards.json.')
 
     @staticmethod
     def _escape_name(card):
@@ -214,7 +217,11 @@ class Card:
             elif type == 'item':
                 # Stats granted by items are extracted from their text
                 stats = re.findall(r'\+(\d)/\+(\d)', text)
-                power, health = stats[0]
+                try:
+                    power, health = stats[0]
+                except:
+                    power = ''
+                    health = ''						
             else:
                 stats = None
 				
@@ -251,8 +258,7 @@ class Card:
             if self.type == 'creature':
                 return t.format('{}/'.format(self.power), '{}'.format(self.health))
             elif self.type == 'item':
-                return t.format('+{}/'.format(self.power),
-                                '+{}'.format(self.health))
+                return t.format('+{}/'.format(self.power), '+{}'.format(self.health))
             else:
                 return t.format('','')
 
@@ -315,7 +321,7 @@ class TESLCardBot:
     # TODO: Make this template-able, maybe?
     def build_response(self, cards):
         response = ' **Name** | **Type** | **Cost** | **Keywords** | **Attribute** | ' \
-                   '**Rarity** | **Text** \n:--:|:--:|:--:|:--:|:--:|:--:|--|--\n'
+                   '**Rarity** | **Text** \n--|:--:|:--:|:--:|:--:|:--:|--|--\n'
         too_long = None
         cards_not_found = []
         cards_not_sure = {}
@@ -358,6 +364,9 @@ class TESLCardBot:
                     'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
                     'message/compose/?to={})'.format(self.author)
+        if len(response) > 10000:
+            response = 'I\'m afraid your query created a reply that was too long.\n\n' \
+                       'Try entering less cards in your comment and I\'ll reply.'
         return response
 
     def log(self, msg):
