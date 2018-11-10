@@ -177,7 +177,7 @@ class Card:
         if 'tazdaddy' in name.lower():
             name = 'tazkad the packmaster'
         if 'dangernoodle' in name.lower():
-            name = 'giant bat'
+            name = 'territorial viper'
         if 'bonedaddy' in name.lower():
             name = 'bone colossus'
 		
