@@ -359,9 +359,7 @@ class TESLCardBot:
                         'Did I guess these correctly?\n'
             for k in cards_not_sure:
                 response += '\n- {} is interpreted as {}\n'.format(k,cards_not_sure[k].name)
-        response += '\n\n\n^(_I am a bot, and this action was performed automatically. Created by user G3Kappa. ' \
-                    'Maintained by NotGooseFromTopGun. ' \
-                    'Special thanks to Jeremy at legends-decks._)' \
+        response += '\n\n\n^(_I am a bot, bleep, bloop, etc._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
                     'message/compose/?to={})'.format(self.author)
         if len(response) > 10000:
