@@ -17,7 +17,7 @@ def remove_duplicates(seq):
 
 
 class Card:
-    CARD_IMAGE_BASE_URL = 'http://www.legends-decks.com/img_cards/{}.png'
+    CARD_IMAGE_BASE_URL = 'http://teslcardscrapercardsdb.s3.amazonaws.com/cards/{}.png'
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
     JSON_DATA = []
     KEYWORDS = ['Prophecy', 'Breakthrough', 'Guard', 'Regenerate', 'Charge',
