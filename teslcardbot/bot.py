@@ -17,7 +17,7 @@ def remove_duplicates(seq):
 
 
 class Card:
-    CARD_IMAGE_BASE_URL = 'http://teslcardscrapercardsdb.s3.amazonaws.com/cards/{}.png'
+    CARD_IMAGE_BASE_URL = 'http://www.legends-decks.com/img_cards/{}.png'
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
     JSON_DATA = []
     KEYWORDS = ['Prophecy', 'Breakthrough', 'Guard', 'Regenerate', 'Charge',
@@ -359,7 +359,9 @@ class TESLCardBot:
                         'Did I guess these correctly?\n'
             for k in cards_not_sure:
                 response += '\n- {} is interpreted as {}\n'.format(k,cards_not_sure[k].name)
-        response += '\n\n\n^(_I am a bot, bleep, bloop, etc._)' \
+        response += '\n\n\n^(_I am a bot, and this action was performed automatically. Created by user G3Kappa. ' \
+                    'Maintained by NotGooseFromTopGun. ' \
+                    'Special thanks to Jeremy at legends-decks._)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
                     'message/compose/?to={})'.format(self.author)
         if len(response) > 10000:
