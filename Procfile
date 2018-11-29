@@ -1,2 +1,2 @@
 bot: python teslcardbot/main.py --target_sub elderscrollslegends
-handler: python card_handler.py
+card-handler: python file_compare.py
