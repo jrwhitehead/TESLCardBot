@@ -115,7 +115,7 @@ sorting_order = [
   "text"]
 
 dict = []
-for x in range(21):
+for x in range(22):
     path = "https://www.legends-decks.com/cards/all/mana-up/"
     path += (str(x+1))
     path += "/list?f-collectible=both&f-set=all"
