@@ -97,7 +97,12 @@ with open ('diff.csv', newline='') as csvfile:
         split = urllib.parse.urlsplit(url)
         filenamePath = "cards/" + split.path.split("/")[-1]
         filename = split.path.split("/")[-1]
-        urllib.request.urlretrieve(url, filename)
+        try:
+            urllib.request.urlretrieve(url, filename)
+        except urllib.error.HTTPError:
+            # Do something here to handle the error. For example:
+            print("URL", (url, filename), "could not be read.")
+            continue
         print('card_grabber_and_uploader# This is card number:', count)
         print(('card_grabber_and_uploader# Saving file {} locally').format(filename))
         print(('card_grabber_and_uploader# Uploading {} to AWS.').format(filename))
