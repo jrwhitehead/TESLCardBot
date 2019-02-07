@@ -40,7 +40,7 @@ class Card:
 
     @staticmethod
     def _escape_name(card):
-        return re.sub(r'[\s_\-"\',;{\}]', '', card).lower()
+        return re.sub(r'[\s_\-"\',;{\}/]', '', card).lower()
 
     @staticmethod
     def _img_exists(url):
@@ -206,7 +206,7 @@ class Card:
 			
 	    # change cost to unicode circled number
             unicodeNumbers = ["⓿","❶","❷","❸","❹","❺","❻","❼","❽","❾","❶⓿","❶❶","❶❷","⑬","⑭","⑮","⑯","⑰","⑱","⑲","❷⓿"]
-            cost = unicodeNumbers[cost]
+            #cost = unicodeNumbers[cost]
 
             text = card['text']
             power = ''
@@ -278,7 +278,7 @@ class Card:
 
 class TESLCardBot:
     # Using new regex that doesn't match {{}} with no text or less than 3 chars.
-    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z-\']{3,}[A-Za-z ]*)\}\}')
+    CARD_MENTION_REGEX = re.compile(r'\{\{([ ]*[A-Za-z-\'/]{3,}[A-Za-z ]*)\}\}')
 
     @staticmethod
     def find_card_mentions(s):
@@ -359,9 +359,7 @@ class TESLCardBot:
                         'Did I guess these correctly?\n'
             for k in cards_not_sure:
                 response += '\n- {} is interpreted as {}\n'.format(k,cards_not_sure[k].name)
-        response += '\n\n\n^(_I am a bot, and this action was performed automatically. Created by user G3Kappa. ' \
-                    'Maintained by NotGooseFromTopGun. ' \
-                    'Special thanks to Jeremy at legends-decks._)' \
+        response += '\n\n\n^(_I am a bot, bleep, bloop, etc_)' \
                     '\n\n[^Source ^Code](https://github.com/jrwhitehead/TESLCardBot/) ^| [^Send ^PM](https://www.reddit.com/' \
                     'message/compose/?to={})'.format(self.author)
         if len(response) > 10000:
