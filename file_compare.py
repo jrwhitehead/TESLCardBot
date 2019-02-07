@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import json, boto3, sys, os, time, csv, urllib.request, urllib, urllib.parse, requests, filecmp
+import json, boto3, sys, os, time, csv, urllib.request, urllib, urllib.parse, requests, filecmp, re
 from collections import OrderedDict
 
 same = None
@@ -10,7 +10,7 @@ S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
-print('card_fetcher# Started scraping cards from legends-decks.com.')
+print('file_compare# Started scraping cards from legends-decks.com.')
 
 def load_card(path):
     ignore = ["played in", 
@@ -115,42 +115,56 @@ sorting_order = [
   "text"]
 
 dict = []
-for x in range(22):
-    path = "https://www.legends-decks.com/cards/all/mana-up/"
-    path += (str(x+1))
-    path += "/list?f-collectible=both&f-set=all"
-    print('card_fetcher# Started page',(x+1))
-    for path2 in load_list(path):
-        dict.append(OrderedDict(custom_sort(load_card(path2))))
-    print('card_fetcher# Finished page',(x+1))
-print('card_fetcher# Saving to cards.json.')
-open("cards.json", "w").write(json.dumps(dict, indent=2, sort_keys=False))
-#print("card_fetcher# Uploading cards.json to AWS.")
-#s3 = boto3.resource('s3')
-#s3.meta.client.upload_file('cards.json', S3_BUCKET_NAME, 'cards.json')
-print('card_fetcher# All done for now. Going to Sleep.')
-time.sleep(2)
+
+#Get number of pages to scrape
+page = requests.get("https://www.legends-decks.com/cards/all/mana-up/1/list?f-collectible=both&f-set=all")
+page_soup = BeautifulSoup(page.content, 'html.parser')
+mydivs = page_soup.findAll("a", {"class": "pagin"})
+mydivs_string = str(mydivs)
+pages = re.findall("\d+\d+",mydivs_string)[0]
+int_pages = int(pages)
+print('file_compare# There are {} pages to scrape.'.format(pages))
+
+#Scrape the card names from the number of pages identified to have cards from above code
+try:
+    for x in range(int_pages):
+        path = "https://www.legends-decks.com/cards/all/mana-up/"
+        path += (str(x+1))
+        path += "/list?f-collectible=both&f-set=all"
+        print('file_compare# Started page',(x+1))
+        for path2 in load_list(path):
+            dict.append(OrderedDict(custom_sort(load_card(path2))))
+        print('file_compare# Finished page',(x+1))
+    print('file_compare# Saving to cards.json.')
+    open("cards.json", "w").write(json.dumps(dict, indent=2, sort_keys=False))
+    print("file_compare# Uploading cards.json to AWS.")
+    s3 = boto3.resource('s3')
+    s3.meta.client.upload_file('cards.json', S3_BUCKET_NAME, 'cards.json')
+    print('file_compare# All done for now. Going to Sleep.')
+    time.sleep(2)
+except:
+    print('file_compare# Finished scraping or an error occured.')
 
 ################
 # get cards.json from AWS and save as old-cards.json
 #
 
-print('downloader-9000 # Downloading cards.json from AWS.')
+print('file_compare# Downloading cards.json from AWS.')
 urllib.request.urlretrieve('http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json', 'old-cards.json')
-print('downloader-9000 # Finished downloading and saving cards.json as old-cards.json.')
+print('file_compare# Finished downloading and saving cards.json as old-cards.json.')
 time.sleep(2)
 
 
 def compare_files(f1,f2):
     same = (filecmp.cmp(f1, f2, shallow=False))
     if same == False:
-        print('compare # cards.json has changed.')
-        print('compare # Proceeding to; upload cards.json, get missing card images from legends-decks and upload new card images to AWS.')
+        print('file_compare# cards.json has changed.')
+        print('file_compare# Proceeding to; upload cards.json, get missing card images from legends-decks and upload new card images to AWS.')
         os.system("python card_handler.py")
     else:
-        print('compare # cards.json matches old cards.json.')
-        print('compare # Nothing to do here.')
-        print('compare # All done for now. Going to Sleep.')
+        print('file_compare# cards.json matches old cards.json.')
+        print('file_compare# Nothing for me to do here.')
+        print('file_compare# All done for now. Going to Sleep.')
         time.sleep(86400)
 
 if __name__ == '__main__':
