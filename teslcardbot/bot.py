@@ -221,11 +221,6 @@ class Card:
             unique = card['isunique'] == True
             cost = int(card['cost'])
 			
-	        #change cost to unicode circled number
-            #this has been disabled as it does not display well across different device types
-            #unicodeNumbers = ["⓿","❶","❷","❸","❹","❺","❻","❼","❽","❾","❶⓿","❶❶","❶❷","⑬","⑭","⑮","⑯","⑰","⑱","⑲","❷⓿"]
-            #cost = unicodeNumbers[cost]
-
             text = card['text']
             power = ''
             health = ''
@@ -322,7 +317,7 @@ class TESLCardBot:
         cards = TESLCardBot.find_card_mentions(s.selftext)
         if len(cards) > 0 and not s.saved:
             try:
-                self.check_for_dual_cards(cards)
+                cards = list(dict.fromkeys(self.check_for_dual_cards(cards)))
                 self.log('Commenting in post by {} titled "{}" about the following cards: {}'.format(s.author, s.title, cards))
                 response = self.build_response(cards)
                 s.reply(response)
@@ -336,9 +331,7 @@ class TESLCardBot:
         cards = TESLCardBot.find_card_mentions(c.body)
         if len(cards) > 0 and not c.saved and c.author != os.environ['REDDIT_USERNAME']:
             try:
-                #self.check_for_dual_cards(cards)
                 cards = list(dict.fromkeys(self.check_for_dual_cards(cards)))
-                #cards = list(set(self.check_for_dual_cards(cards)))
                 self.log('Replying to {} in comment id {} about the following cards: {}'.format(c.author, c.id, cards))
                 response = self.build_response(cards)
                 c.reply(response)
