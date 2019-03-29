@@ -195,7 +195,9 @@ class Card:
             name = 'territorial viper'
         if 'bonedaddy' in name.lower():
             name = 'bone colossus'
-        
+        if 'moose' in name.lower():
+            name = 'wilds incarnate'
+             
         data = Card._fetch_data_partial(name)
 
         if data == []:
