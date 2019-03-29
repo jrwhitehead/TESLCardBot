@@ -309,10 +309,15 @@ class TESLCardBot:
 
     def check_for_dual_cards(self, cards):
         dual_cards = ([s for s in cards if '/' in s.lower()])
+        dual_cards_and = ([s for s in cards if ' and ' in s.lower()])
         for x in dual_cards:
             dual_card1, dual_card2 = x.split('/')
             cards.insert((cards.index(x) +1),dual_card1)
             cards.insert((cards.index(x) +2),dual_card2)
+        for y in dual_cards_and:
+            dual_card1_and, dual_card2_and = y.split(' and ')
+            cards.insert((cards.index(y) +1),dual_card1_and)
+            cards.insert((cards.index(y) +2),dual_card2_and)            
         return cards
 
     def _process_submission(self, s):
