@@ -353,22 +353,23 @@ class TESLCardBot:
         cards_found = 0
         for name in cards:
             cards = Card.get_info(name)
-            if cards is None:
+            if cards == None:
                 cards_not_found.append(name)
                 card_quantity += 1
             else:
                 card_quantity += 1
                 too_long = False
-            if len(cards) > 5: # just making sure the comment isn't too long
-                cards_found += int(len(cards)) - 5
-                cards = cards[:5]
-                too_long = True
-            for card in cards:
-                if (str(card)) not in response:
-                    response += '{}\n'.format(str(card))
-                # this should mean there was a typo in the input
-                if Card._escape_name(name) not in Card._escape_name(card.name):
-                    cards_not_sure[name] = card 
+            if cards != None:
+                if len(cards) > 5: # just making sure the comment isn't too long
+                    cards_found += int(len(cards)) - 5
+                    cards = cards[:5]
+                    too_long = True
+                for card in cards:
+                    if (str(card)) not in response:
+                        response += '{}\n'.format(str(card))
+                    # this should mean there was a typo in the input
+                    if Card._escape_name(name) not in Card._escape_name(card.name):
+                        cards_not_sure[name] = card 
 
         if too_long == True:
             response += '\n Your query matched with too many cards. {} further results were omitted. You could try being more specific.\n\n'.format(cards_found)
