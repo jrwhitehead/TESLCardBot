@@ -375,12 +375,12 @@ class TESLCardBot:
             response += '\n Your query matched with too many cards. {} further results were omitted. You could try being more specific.\n\n'.format(cards_found)
         if len(cards_not_found) == card_quantity:
             response = 'I\'m sorry, but none of the cards you mentioned were matched. ' \
-                       'I know pretty much all cards.. Did you mash the keyboard Mr Sausage Fingers?\n'
+                       'I know pretty much all cards.. Did you mash the keyboard Sausage Fingers?\n'
         elif len(cards_not_found) > 0:
             response += '\nOne or more of the cards you mentioned were not matched: _{}._ ' \
-                        'I know pretty much all cards.. Did you mash the keyboard Mr Sausage Fingers?\n'.format(', '.join(cards_not_found))
+                        'I know pretty much all cards.. Did you mash the keyboard Sausage Fingers?\n'.format(', '.join(cards_not_found))
         if len(cards_not_sure) > 0:
-            response += '\nHi Mr Sausage Fingers, some of the cards may have been written with typos, but I tried to guess them anyway. ' \
+            response += '\nHi Sausage Fingers, some of the cards may have been written with typos, but I tried to guess them anyway. ' \
                         'Did I guess these correctly?\n'
             for k in cards_not_sure:
                 response += '\n- {} is interpreted as {}\n'.format(k,cards_not_sure[k].name)
