@@ -3,22 +3,6 @@ import requests, random, json, praw, praw.exceptions, re, os
 from prawcore.exceptions import PrawcoreException
 from collections import OrderedDict
 
-def remove_duplicates(seq):
-    seen = set()
-    if type(seq) == list:
-        seen_add = seen.add
-        return [x for x in seq if not (x in seen or seen_add(x))]
-    elif type(seq) == str:
-        no_dupes_response = []
-        for line in seq.splitlines():
-            if line not in seen or line == "":
-                seen.add(line)
-                no_dupes_response.append(line)
-        seq = '\n'.join(no_dupes_response)
-        return seq  
-    else:
-        return seq  
-
 class Card:
     CARD_IMAGE_BASE_URL = 'http://teslcardscrapercardsdb.s3.amazonaws.com/cards/{}.png'
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
@@ -29,6 +13,31 @@ class Card:
                 'Betray',
                 'Exalt', 'Plot', 'Rally', 'Slay', 'Treasure Hunt', 'Mobilize']
     PARTIAL_MATCH_END_LENGTH = 20
+
+    @staticmethod
+    def remove_duplicates(seq):
+        seen = set()
+        seq_no_dupes = []
+        if type(seq) == list:
+            #seen_add = seen.add
+            #return [x for x in seq if not (x in seen or seen_add(x))]
+            #return(list(set(seq)))
+            for x in seq:
+
+                if x not in seq_no_dupes:
+                    seq_no_dupes.append(x)
+                    
+            return seq_no_dupes
+        elif type(seq) == str:
+            no_dupes_response = []
+            for line in seq.splitlines():
+                if line not in seen or line == "":
+                    seen.add(line)
+                    no_dupes_response.append(line)
+            seq = '\n'.join(no_dupes_response)
+            return seq  
+        else:
+            return seq  
 
     @staticmethod
     def preload_card_data(url='http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json'):
@@ -64,7 +73,7 @@ class Card:
                 keywords.append(word)
             else:
                 break
-        return remove_duplicates(keywords)
+        return Card.remove_duplicates(keywords)
 
     @staticmethod
     def _get_bigrams(word):
@@ -111,12 +120,12 @@ class Card:
         :param name: the name of the card we are trying to find
         :return: the card with the best match and the index
         """
+        TESLCardBot.log(Card,'Getting card data with typo.')
         best_match = None
         best_similarity = 0
         all_sims = []
         for x in Card.JSON_DATA:
-            ind = Card._get_similarity_index(Card._escape_name(name),
-                                             Card._escape_name(x['name']))
+            ind = Card._get_similarity_index(Card._escape_name(name),Card._escape_name(x['name']))
             all_sims.append(ind)
             if ind > best_similarity:
                 best_match = x
@@ -142,16 +151,23 @@ class Card:
 
     @staticmethod
     def _fetch_data_partial(name):
+        TESLCardBot.log(Card,'Fetching match or partial matches.')
         i = 0
         matches = ['', '']
+        res = []
         while len(matches) > 1 and i <= Card.PARTIAL_MATCH_END_LENGTH:
             matches = [s for s in Card.JSON_DATA if Card._escape_name(name[:i]) in Card._escape_name(s['name'])]
+            direct_hit = [s for s in Card.JSON_DATA if name == Card._escape_name(s['name'])]
+            if (len(direct_hit)) == 1:
+                res.extend(direct_hit)
+                TESLCardBot.log(Card,'Found direct match!')
+                return res
             i += 1
 
-        res = []
         for match in matches:
             if Card._escape_name(name) in Card._escape_name(match['name']):
-                res.append(match)
+                if match not in res:
+                    res.append(match)
         return res
 
     @staticmethod
@@ -172,21 +188,21 @@ class Card:
             Card.preload_card_data()
             assert (len(Card.JSON_DATA) > 0)
 
-        data = Card._fetch_data_partial(name)
-
-	    # We handle some common card nicknames here	
+        # We handle some common card nicknames here	
         if 'tazdaddy' in name.lower():
             name = 'tazkad the packmaster'
         if 'dangernoodle' in name.lower():
             name = 'territorial viper'
         if 'bonedaddy' in name.lower():
             name = 'bone colossus'
-		
-        if not data:
+        
+        data = Card._fetch_data_partial(name)
+
+        if data == []:
             # Attempting to guess a card that is written with a typo
             data, index = Card._get_data_with_typo(name)
 
-        if data[0] is None or index < 0.28:
+        if data == [] or index < 0.28:
             # if we found literally nothing (which is unlikely), or they aren't similar enough, quit
             # 0.25 is chosen from the top of my head, may need tweaking
             return None
@@ -205,8 +221,9 @@ class Card:
             unique = card['isunique'] == True
             cost = int(card['cost'])
 			
-	    # change cost to unicode circled number
-            unicodeNumbers = ["⓿","❶","❷","❸","❹","❺","❻","❼","❽","❾","❶⓿","❶❶","❶❷","⑬","⑭","⑮","⑯","⑰","⑱","⑲","❷⓿"]
+	        #change cost to unicode circled number
+            #this has been disabled as it does not display well across different device types
+            #unicodeNumbers = ["⓿","❶","❷","❸","❹","❺","❻","❼","❽","❾","❶⓿","❶❶","❶❷","⑬","⑭","⑮","⑯","⑰","⑱","⑲","❷⓿"]
             #cost = unicodeNumbers[cost]
 
             text = card['text']
@@ -283,7 +300,7 @@ class TESLCardBot:
 
     @staticmethod
     def find_card_mentions(s):
-        return remove_duplicates(TESLCardBot.CARD_MENTION_REGEX.findall(s))
+        return Card.remove_duplicates(TESLCardBot.CARD_MENTION_REGEX.findall(s))
 
     def _get_praw_instance(self):
         r = praw.Reddit(client_id=os.environ['CLIENT_ID'],
@@ -293,10 +310,19 @@ class TESLCardBot:
                         password=os.environ['REDDIT_PASSWORD'])
         return r
 
+    def check_for_dual_cards(self, cards):
+        dual_cards = ([s for s in cards if '/' in s.lower()])
+        for x in dual_cards:
+            dual_card1, dual_card2 = x.split('/')
+            cards.insert((cards.index(x) +1),dual_card1)
+            cards.insert((cards.index(x) +2),dual_card2)
+        return cards
+
     def _process_submission(self, s):
         cards = TESLCardBot.find_card_mentions(s.selftext)
         if len(cards) > 0 and not s.saved:
             try:
+                self.check_for_dual_cards(cards)
                 self.log('Commenting in post by {} titled "{}" about the following cards: {}'.format(s.author, s.title, cards))
                 response = self.build_response(cards)
                 s.reply(response)
@@ -306,26 +332,13 @@ class TESLCardBot:
                 self.log('There was an error while trying to leave a comment.')
                 raise
 
-    def check_for_dual_cards(self, cards):
-        dualCards = ['cloak/dagger','','felldew/elytra noble','','manic grummite/demented grummite','','manic jack/manic mutation','',
-                        'baliwog tidecrawlers/smoked baliwog leg','','spawn mother/baliwog','','tavyar the knight/rayvat the mage']
-        splitDualCards = ['cloak','dagger','felldew','elytra noble','manic grummite','demented grummite',
-                            'manic jack','manic mutation','baliwog tidecrawlers','smoked baliwog leg',
-                            'spawn mother','baliwog','tavyar the knight','rayvat the mage']
-
-        for card in cards:
-            if card in dualCards:
-                indexOfDual = (dualCards.index(card))
-                for number in range(2):
-                    cards.append(splitDualCards[indexOfDual])
-                    indexOfDual += 1
-        return cards
-
     def _process_comment(self, c):
         cards = TESLCardBot.find_card_mentions(c.body)
         if len(cards) > 0 and not c.saved and c.author != os.environ['REDDIT_USERNAME']:
             try:
-                self.check_for_dual_cards(cards)
+                #self.check_for_dual_cards(cards)
+                cards = list(dict.fromkeys(self.check_for_dual_cards(cards)))
+                #cards = list(set(self.check_for_dual_cards(cards)))
                 self.log('Replying to {} in comment id {} about the following cards: {}'.format(c.author, c.id, cards))
                 response = self.build_response(cards)
                 c.reply(response)
@@ -337,6 +350,7 @@ class TESLCardBot:
 
     # TODO: Make this template-able, maybe?
     def build_response(self, cards):
+        self.log('Building response.')
         response = ' **Name** | **Type** | **Cost** | **Keywords** | **Attribute** | ' \
                    '**Rarity** | **Text** \n--|:--:|:--:|:--:|:--:|:--:|--|--\n'
         too_long = None
@@ -344,9 +358,6 @@ class TESLCardBot:
         cards_not_sure = {}
         card_quantity = 0
         cards_found = 0
-
-        remove_duplicates(cards)
-
         for name in cards:
             cards = Card.get_info(name)
             if cards is None:
@@ -355,15 +366,16 @@ class TESLCardBot:
             else:
                 card_quantity += 1
                 too_long = False
-                if len(cards) > 5: # just making sure the comment isn't too long
-                    cards_found = int(len(cards)) - 5
-                    cards = cards[:5]
-                    too_long = True
-                for card in cards:
+            if len(cards) > 5: # just making sure the comment isn't too long
+                cards_found += int(len(cards)) - 5
+                cards = cards[:5]
+                too_long = True
+            for card in cards:
+                if (str(card)) not in response:
                     response += '{}\n'.format(str(card))
-                    # this should mean there was a typo in the input
-                    if Card._escape_name(name) not in Card._escape_name(card.name):
-                        cards_not_sure[name] = card
+                # this should mean there was a typo in the input
+                if Card._escape_name(name) not in Card._escape_name(card.name):
+                    cards_not_sure[name] = card 
 
         if too_long == True:
             response += '\n Your query matched with too many cards. {} further results were omitted. You could try being more specific.\n\n'.format(cards_found)
@@ -385,7 +397,7 @@ class TESLCardBot:
             response = 'I\'m afraid your query created a reply that was too long.\n\n' \
                        'Try entering less cards in your comment/post and I\'ll consider replying.'
   
-        return remove_duplicates(response)
+        return response
 
     def log(self, msg):
         print('tesl-bot-9000 # {}'.format(msg))
@@ -401,12 +413,12 @@ class TESLCardBot:
             return
 
         already_done = []
-        subreddit = r.subreddit(self.target_sub)
+        #subreddit = r.subreddit(self.target_sub)
 
         while True:
             try:
-		# Updated the method of acquiring comments and submission as new submissions were not being caught
-		# Method from here: https://www.reddit.com/r/redditdev/comments/7vj6ox/can_i_do_other_things_with_praw_while_reading/dtszfzb/?context=3
+		        # Updated the method of acquiring comments and submission as new submissions were not being caught
+		        # Method from here: https://www.reddit.com/r/redditdev/comments/7vj6ox/can_i_do_other_things_with_praw_while_reading/dtszfzb/?context=3
                 new_submissions = r.subreddit(self.target_sub).stream.submissions(pause_after=-1) 
                 new_comments = r.subreddit(self.target_sub).stream.comments(pause_after=-1)
 
