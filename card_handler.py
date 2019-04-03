@@ -12,9 +12,10 @@
 Created on Mon Apr 10 10:39:50 2017
 @author: jersey
 """
-import json, boto3, sys, os, time, csv, urllib.request, urllib, urllib.parse
+import json, boto3, sys, os, time, csv, urllib.request, urllib, urllib.parse, re
 #from collections import OrderedDict
 from bs4 import BeautifulSoup
+from deepdiff import DeepDiff
 
 S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
@@ -74,6 +75,41 @@ def differences():
                 num_of_differences += 1
 
     log(('There were {} new cards detected!').format(num_of_differences))
+    return num_of_differences
+
+def readFile(readingFile):
+    log(('Reading {}.').format(readingFile))
+    card_data = open(readingFile,"r")
+    cards_parsed = json.load(card_data)
+    return cards_parsed
+
+def findTheIndex(diffs):
+    return re.findall(r'(?<=root\[)([0-9]{1,4})',diffs)
+
+def findCardName(cardNumbers):
+    count = 0
+    interestingRows = list()
+
+    for card in cardNumbers:     
+        card = (int(card))
+        log(('Card number {}.').format(card))
+        with open('cards.csv') as fd:
+            reader=csv.reader(fd)
+            #log(('count {}').format(count))
+            interestingRow = [row for idx, row in enumerate(reader) if idx == card]
+            interestingRows.append(interestingRow)
+            #log(interestingRows[count])
+            count += 1
+    log(('There are {} nerfed/buffed cards.').format(count))
+    return interestingRows
+
+def saveCardsToCsv(nerfedCards):
+    with open('diff.csv', 'w') as diff:
+        for x in nerfedCards:
+            x = (str(x))
+            x = x.strip('[[\'')
+            x = x.rstrip('\']]')
+            diff.write('{}\n'.format(x))
 
 def downloadCards():
     # This section takes the diff.csv file of card names as input and downloads the card images from legends-decks.com and uploads the images to AWS.
@@ -98,15 +134,42 @@ def downloadCards():
             log(('Saving file {} locally.').format(filename))
             log(('Uploading {} to AWS.').format(filename))
             s3 = boto3.resource('s3')
-            s3.meta.client.upload_file(filename, S3_BUCKET_NAME, filenamePath, ExtraArgs={'ContentType': "image/png", 'ACL': "public-read", 'StorageClass': "REDUCED_REDUNDANCY"})
+            try:
+                s3.meta.client.upload_file(filename, S3_BUCKET_NAME, filenamePath, ExtraArgs={'ContentType': "image/png", 'ACL': "public-read", 'StorageClass': "REDUCED_REDUNDANCY"})
+            except botocore.exceptions.ClientError as e:
+                log(('There was an error uploading {}.').format(filename))
+                log(('The error was "{}"').format(e))
             count += 1
     log('Finished uploading cards.')
+
+def uploadToAWS():
+    log('Uploading cards.json to AWS.')
+    s3 = boto3.resource('s3')
+    try:
+        s3.meta.client.upload_file('cards.json', S3_BUCKET_NAME, 'dev/cards.json', ExtraArgs={'ACL': "public-read", 'StorageClass': "REDUCED_REDUNDANCY"})
+    except botocore.exceptions.ClientError as e:
+        log('There was an error uploading cards.json.')
+        log(('The error was "{}"').format(e))
+    log('Finished.')
 
 if __name__ == '__main__':
     log('Starting..')
     json2csv('cards.json')
     json2csv('old-cards.json')
     log('Finished converting and saving files in csv format.')
-    differences()
-    downloadCards()
+    thereAreNewCards = differences()
+    if thereAreNewCards > 0:
+        downloadCards()
+        uploadToAWS()
+    else:
+        newFile = readFile('cards.json')
+        oldFile = readFile('old-cards.json')
+        difr = findTheIndex((str(DeepDiff(newFile, oldFile))))
+        nerfed = findCardName(difr)
+        if len(nerfed)==0:
+            log('No nerfed/buffed cards found')
+        else:
+            saveCardsToCsv(nerfed)
+            downloadCards()
+            uploadToAWS()
     time.sleep(86400)
