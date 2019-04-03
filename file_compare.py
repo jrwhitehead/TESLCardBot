@@ -136,7 +136,7 @@ def download_json_file():
     # get cards.json from AWS and save as old-cards.json
 
     log('Downloading cards.json from AWS.')
-    urllib.request.urlretrieve('http://teslcardscrapercardsdb.s3.amazonaws.com/dev/cards.json', 'old-cards.json')
+    urllib.request.urlretrieve('http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json', 'old-cards.json')
     log('Finished downloading and saving cards.json as old-cards.json.')
 
 def compare_files(f1,f2):
