@@ -122,7 +122,7 @@ def downloadCards():
         for row in cardreader:
             url = ('http://www.legends-decks.com/img_cards/{}.png'.format(row[0]))
             split = urllib.parse.urlsplit(url)
-            filenamePath = "dev/cards/" + split.path.split("/")[-1]
+            filenamePath = "cards/" + split.path.split("/")[-1]
             filename = split.path.split("/")[-1]
             try:
                 urllib.request.urlretrieve(url, filename)
@@ -146,7 +146,7 @@ def uploadToAWS():
     log('Uploading cards.json to AWS.')
     s3 = boto3.resource('s3')
     try:
-        s3.meta.client.upload_file('cards.json', S3_BUCKET_NAME, 'dev/cards.json', ExtraArgs={'ACL': "public-read", 'StorageClass': "REDUCED_REDUNDANCY"})
+        s3.meta.client.upload_file('cards.json', S3_BUCKET_NAME, 'cards.json', ExtraArgs={'ACL': "public-read", 'StorageClass': "REDUCED_REDUNDANCY"})
     except botocore.exceptions.ClientError as e:
         log('There was an error uploading cards.json.')
         log(('The error was "{}"').format(e))
