@@ -7,11 +7,11 @@ class Card:
     CARD_IMAGE_BASE_URL = 'http://teslcardscrapercardsdb.s3.amazonaws.com/cards/{}.png'
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
     JSON_DATA = []
-    KEYWORDS = ['Prophecy', 'Breakthrough', 'Guard', 'Regenerate', 'Charge',
-                'Ward', 'Shackle',
-                'Lethal', 'Pilfer', 'Last Gasp', 'Summon', 'Drain', 'Assemble',
-                'Betray',
-                'Exalt', 'Plot', 'Rally', 'Slay', 'Treasure Hunt', 'Mobilize']
+    KEYWORDS = ['Assemble', 'Betray', 'Breakthrough', 'Charge', 'Drain',
+                'Empower', 'Exalt', 'Guard', 'Last Gasp', 'Lethal',
+                'Mobilize', 'Pilfer', 'Plot', 'Prophecy', 'Rally',
+                'Regenerate', 'Shackle', 'Slay', 'Summon', 'Treasure Hunt',
+                'Ward']
     PARTIAL_MATCH_END_LENGTH = 20
 
     @staticmethod
@@ -19,14 +19,9 @@ class Card:
         seen = set()
         seq_no_dupes = []
         if type(seq) == list:
-            #seen_add = seen.add
-            #return [x for x in seq if not (x in seen or seen_add(x))]
-            #return(list(set(seq)))
             for x in seq:
-
                 if x not in seq_no_dupes:
-                    seq_no_dupes.append(x)
-                    
+                    seq_no_dupes.append(x)                
             return seq_no_dupes
         elif type(seq) == str:
             no_dupes_response = []
@@ -40,12 +35,12 @@ class Card:
             return seq  
 
     @staticmethod
-    def preload_card_data(url='http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json'):
+    def preload_card_data(url='http://teslcardscrapercardsdb.s3.amazonaws.com/dev/cards.json'):
         TESLCardBot.log(Card,'Downloading cards.json from AWS.')
         cfile = requests.get(url)
         cards = cfile.json()
         with open('cards.json', 'w') as f:
-            json.dump(cards, f)
+            json.dump(cards, f, indent=4, sort_keys=False)
         with open('cards.json') as f:
             Card.JSON_DATA = json.load(f)
         TESLCardBot.log(Card,'Finished downloading and saving cards.json.')
@@ -197,7 +192,9 @@ class Card:
             name = 'bone colossus'
         if 'moose' in name.lower():
             name = 'wilds incarnate'
-             
+        if 'merric' in name.lower():
+            name = 'merric-at-aswala'
+            
         data = Card._fetch_data_partial(name)
 
         if data == []:
