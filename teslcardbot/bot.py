@@ -35,7 +35,7 @@ class Card:
             return seq  
 
     @staticmethod
-    def preload_card_data(url='http://teslcardscrapercardsdb.s3.amazonaws.com/dev/cards.json'):
+    def preload_card_data(url='http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json'):
         TESLCardBot.log(Card,'Downloading cards.json from AWS.')
         cfile = requests.get(url)
         cards = cfile.json()
