@@ -148,7 +148,7 @@ def compare_files(f1,f2):
             log('Either something is wrong or cards have been nerfed.')
             log('The new cards.json is smaller than the old file.')
             log('Need to check what, if anything, has changed and upload nerfed/buffed cards')
-            os.system("python check_difference.py")
+            os.system("python card_handler.py")
         else:
             log('cards.json has changed.')
             log('Proceeding to; upload cards.json, get missing card images from legends-decks and upload new card images to AWS.')
