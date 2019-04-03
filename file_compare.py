@@ -8,8 +8,6 @@ S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
-print('file_compare# Starting....')
-
 def load_card(path):
     ignore = ["played in", 
               "bbcode", 
@@ -86,7 +84,7 @@ def load_list(path):
         data.append(cells[1].find('a')['href'])
     return data
     
-def custom_sort (to_sort):
+def custom_sort(to_sort):
     sorting_order = ["name","rarity","isunique","type","attributes",
                     "cost","attack","health","race","text"]
     list1 = []
@@ -105,7 +103,7 @@ def custom_sort (to_sort):
 def scrape_cards():
     ################
     # scrape all card details from legends-decks.com
-    print('file_compare# Started scraping cards from legends-decks.com.')
+    log('Started scraping cards from legends-decks.com.')
     dict = []
 
     #Get number of pages to scrape
@@ -115,7 +113,7 @@ def scrape_cards():
     mydivs_string = str(mydivs)
     pages = re.findall("\d+\d+",mydivs_string)[0]
     int_pages = int(pages)
-    print('file_compare# There are {} pages to scrape.'.format(pages))
+    log('There are {} pages to scrape.'.format(pages))
 
     #Scrape the card names from the number of pages identified to have cards from above code
     try:
@@ -123,28 +121,23 @@ def scrape_cards():
             path = "https://www.legends-decks.com/cards/all/mana-up/"
             path += (str(x+1))
             path += "/list?f-collectible=both&f-set=all"
-            print('file_compare# Started page',(x+1))
+            log('Started page {}.'.format(x+1))
             for path2 in load_list(path):
                 dict.append(OrderedDict(custom_sort(load_card(path2))))
-            print('file_compare# Finished page',(x+1))
-        print('file_compare# Saving to cards.json.')
-        open("cards.json", "w").write(json.dumps(dict, indent=2, sort_keys=False))
-        #print("file_compare# Uploading cards.json to AWS.")
-        #s3 = boto3.resource('s3')
-        #s3.meta.client.upload_file('cards.json', S3_BUCKET_NAME, 'cards.json')
-        print('file_compare# Finished scraping all pages.')
-        time.sleep(2)
+            log('Finished page {}.'.format(x+1))
+        log('Saving to cards.json.')
+        open("cards.json", "w").write(json.dumps(dict, indent=4, sort_keys=False))
+        log('Finished scraping all pages.')
     except:
-        print('file_compare# An error occured whilst scraping.')
+        log('An error occured whilst scraping.')
 
 def download_json_file():
     ################
     # get cards.json from AWS and save as old-cards.json
 
-    print('file_compare# Downloading cards.json from AWS.')
-    urllib.request.urlretrieve('http://teslcardscrapercardsdb.s3.amazonaws.com/cards.json', 'old-cards.json')
-    print('file_compare# Finished downloading and saving cards.json as old-cards.json.')
-    time.sleep(2)
+    log('Downloading cards.json from AWS.')
+    urllib.request.urlretrieve('http://teslcardscrapercardsdb.s3.amazonaws.com/dev/cards.json', 'old-cards.json')
+    log('Finished downloading and saving cards.json as old-cards.json.')
 
 def compare_files(f1,f2):
     same = (filecmp.cmp(f1, f2, shallow=False))
@@ -152,18 +145,24 @@ def compare_files(f1,f2):
         cards_size = (os.path.getsize(f1))
         old_cards_size = (os.path.getsize(f2))
         if old_cards_size > cards_size:
-            print('file_compare# Something is wrong. The new cards.json is smaller than the old file.')
-            return
+            log('Either something is wrong or cards have been nerfed.')
+            log('The new cards.json is smaller than the old file.')
+            log('Need to check what, if anything, has changed and upload nerfed/buffed cards')
+            os.system("python check_difference.py")
         else:
-            print('file_compare# cards.json has changed.')
-            print('file_compare# Proceeding to; upload cards.json, get missing card images from legends-decks and upload new card images to AWS.')
+            log('cards.json has changed.')
+            log('Proceeding to; upload cards.json, get missing card images from legends-decks and upload new card images to AWS.')
             os.system("python card_handler.py")
     else:
-        print('file_compare# cards.json matches old cards.json.')
-        print('file_compare# Nothing for me to do here.')
+        log('cards.json matches old cards.json.')
+        log('Nothing for me to do here.')
         return
 
+def log(msg):
+    print('file_compare # {}'.format(msg))
+
 if __name__ == '__main__':
+    log('Starting..')
     download_json_file()
     scrape_cards()
     compare_files('cards.json', 'old-cards.json')
