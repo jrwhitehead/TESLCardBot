@@ -8,8 +8,8 @@ class Card:
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
     JSON_DATA = []
     KEYWORDS = ['Assemble', 'Betray', 'Breakthrough', 'Charge', 'Drain',
-                'Empower', 'Exalt', 'Guard', 'Last Gasp', 'Lethal',
-                'Mobilize', 'Pilfer', 'Plot', 'Prophecy', 'Rally',
+                'Empower', 'Exalt', 'Expertise', 'Guard', 'Last Gasp', 
+                'Lethal', 'Mobilize', 'Pilfer', 'Plot', 'Prophecy', 'Rally',
                 'Regenerate', 'Shackle', 'Slay', 'Summon', 'Treasure Hunt',
                 'Ward']
     PARTIAL_MATCH_END_LENGTH = 20
