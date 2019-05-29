@@ -172,4 +172,4 @@ if __name__ == '__main__':
             saveCardsToCsv(nerfed)
             downloadCards()
             uploadToAWS()
-    time.sleep(86400)
+    sys.exit(0)
