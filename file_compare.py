@@ -166,4 +166,4 @@ if __name__ == '__main__':
     download_json_file()
     scrape_cards()
     compare_files('cards.json', 'old-cards.json')
-    sys.exit(0)
+    time.sleep(86400)
