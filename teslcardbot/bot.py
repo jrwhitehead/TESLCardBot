@@ -7,11 +7,11 @@ class Card:
     CARD_IMAGE_BASE_URL = 'http://teslcardscrapercardsdb.s3.amazonaws.com/cards/{}.png'
     CARD_IMAGE_404_URL = 'http://imgur.com/1Lxy3DA'
     JSON_DATA = []
-    KEYWORDS = ['Assemble', 'Betray', 'Breakthrough', 'Charge', 'Drain',
-                'Empower', 'Exalt', 'Expertise', 'Guard', 'Last Gasp', 
+    KEYWORDS = ['Assemble', 'Betray', 'Breakthrough', 'Charge', 'Consume', 
+                'Drain', 'Empower', 'Exalt', 'Expertise', 'Guard', 'Last Gasp', 
                 'Lethal', 'Mobilize', 'Pilfer', 'Plot', 'Prophecy', 'Rally',
                 'Regenerate', 'Shackle', 'Slay', 'Summon', 'Treasure Hunt',
-                'Ward']
+                'Wane', 'Ward', 'Wax']
     PARTIAL_MATCH_END_LENGTH = 20
 
     @staticmethod
