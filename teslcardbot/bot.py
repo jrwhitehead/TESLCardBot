@@ -196,6 +196,8 @@ class Card:
             name = 'merric-at-aswala'
         if 'rally spear' in name.lower(): #why the fuck woud you call it this and expeect the bot to know it?
             name = 'redoran battlespear'
+        if 'crabscription' in name.lower():
+            name = 'old saltys assault' 
 	
         data = Card._fetch_data_partial(name)
 
