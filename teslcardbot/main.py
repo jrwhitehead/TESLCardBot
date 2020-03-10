@@ -10,5 +10,5 @@ if __name__ == '__main__':
 
     print('tesl-bot-9000 # Started lurking in (/r/{})'.format(args.target_sub))
     bot = TESLCardBot(author='NotGooseFromTopGun', target_sub=args.target_sub)
-    bot.start(batch_limit=10, buffer_size=1000)
+    bot.start(batch_limit=5, buffer_size=500)
     print('tesl-bot-9000  # Stopped running.')
