@@ -18,6 +18,5 @@ if __name__ == '__main__':
     except PrawcoreException as e:
         self.log('Reddit seems to be down! Aborting.')
         self.log(e)
-        return
 			
     print('tesl-bot-9000  # Stopped running.')
