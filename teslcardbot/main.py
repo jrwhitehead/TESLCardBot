@@ -22,9 +22,9 @@ def main():
         except PrawcoreException as e:
             log('Reddit seems to be down! Aborting.')
             log(e)
-			return:
+            return:
 			
-    log('Stopped running.')
+        log('Stopped running.')
 	
 if __name__ == '__main__':
     main()
