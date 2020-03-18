@@ -2,7 +2,7 @@ from bot import TESLCardBot
 import argparse
 from prawcore.exceptions import PrawcoreException
 
-def log(self, msg):
+def log(msg):
     print('tesl-bot-9000 # {}'.format(msg))
 		
 def main():
