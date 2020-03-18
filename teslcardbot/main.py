@@ -12,17 +12,19 @@ def main():
 
     args = parser.parse_args()
 
-    self.log('Started lurking in (/r/{})'.format(args.target_sub))
+    log('Started lurking in (/r/{})'.format(args.target_sub))
     bot = TESLCardBot(author='NotGooseFromTopGun', target_sub=args.target_sub)
-	
-    try:
-        bot.start(batch_limit=5, buffer_size=500)
+    
+    while True:	
+        try:
+            bot.start(batch_limit=5, buffer_size=500)
 
-    except PrawcoreException as e:
-        self.log('Reddit seems to be down! Aborting.')
-        self.log(e)
+        except PrawcoreException as e:
+            log('Reddit seems to be down! Aborting.')
+            log(e)
+			return:
 			
-    self.log('Stopped running.')
+    log('Stopped running.')
 	
 if __name__ == '__main__':
     main()
