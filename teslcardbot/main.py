@@ -1,9 +1,6 @@
 from bot import TESLCardBot
 import argparse
 from prawcore.exceptions import PrawcoreException
-
-def log(msg):
-    print('tesl-bot-9000 # {}'.format(msg))
 		
 def main():
     parser = argparse.ArgumentParser(description='The Elder Scrolls: Legends bot for Reddit.')
@@ -12,19 +9,20 @@ def main():
 
     args = parser.parse_args()
 
-    log('Started lurking in (/r/{})'.format(args.target_sub))
+
     bot = TESLCardBot(author='NotGooseFromTopGun', target_sub=args.target_sub)
-    
+    bot.log('Started lurking in (/r/{})'.format(args.target_sub))
+	
     while True:	
         try:
             bot.start(batch_limit=5, buffer_size=500)
 
         except PrawcoreException as e:
-            log('Reddit seems to be down! Aborting.')
-            log(e)
+            bot.log('Reddit seems to be down! Aborting.')
+            bot.log(e)
             return
 			
-        log('Stopped running.')
+        bot.log('Stopped running.')
 	
 if __name__ == '__main__':
     main()
